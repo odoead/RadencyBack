@@ -11,8 +11,11 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["RadencyBack/RadencyBack.csproj", "RadencyBack/"]
+
+# Copy the solution and then project files to the build context
+COPY ["RadencyBack/RadencyBack.sln", "RadencyBack/"]
 COPY ["RadencyBack/RadencyBack/RadencyBack.csproj", "RadencyBack/RadencyBack/"]
+
 RUN dotnet restore "RadencyBack/RadencyBack.sln"
 COPY . .
 WORKDIR "/src/RadencyBack/RadencyBack"
