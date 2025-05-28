@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: coworking
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - /var/lib/postresql/data
+    networks:
+      - coworking-network
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+      PGADMIN_CONFIG_SERVER_MODE: "True"
+    depends_on:
+      - postgres
+    ports:
+      - 8001:80 
+    volumes:
+      - /var/lib/pgadmin
+
+  coworking-svc:
+    build:
+      context: RadencyBack
+      dockerfile: RadencyBack/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DATABASE_CONNECTION_STRING=Host=postgres;Port=5432;Database=coworking;Username=postgres;Password=postgres
+    ports:
+      - 5247:80
+    depends_on:
+      - postgres
+    networks:
+      - coworking-network
+
+volumes:
+  postgres_data:
+
+networks:
+  coworking-network:
+    driver: bridge
+
+
+
