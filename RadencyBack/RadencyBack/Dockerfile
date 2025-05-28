@@ -12,15 +12,17 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["RadencyBack/RadencyBack.csproj", "RadencyBack/"]
-RUN dotnet restore "./RadencyBack/RadencyBack.csproj"
+COPY ["RadencyBack/RadencyBack/RadencyBack.csproj", "RadencyBack/RadencyBack/"]
+RUN dotnet restore "RadencyBack/RadencyBack.sln"
 COPY . .
-WORKDIR "/src/RadencyBack"
-RUN dotnet build "./RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/RadencyBack/RadencyBack"
+RUN dotnet build "RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# WORKDIR is inherited: /src/RadencyBack/RadencyBack
+RUN dotnet publish "RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
