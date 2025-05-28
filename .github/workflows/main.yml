@@ -9,7 +9,7 @@ on:
 env:
   # your Azure resources
   ACR_NAME: acrcoworkingprod
-  ACR_LOGIN_SERVER: ${{ env.ACR_NAME }}.azurecr.io
+  ACR_LOGIN_SERVER: acrcoworkingprod.azurecr.io
   RESOURCE_GROUP: rg-coworking-prod
   CONTAINERAPP_NAME: app-coworking-api
 
