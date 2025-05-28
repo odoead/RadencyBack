@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.build-push.outputs.image }}
+      image: ${{ steps.set-output.outputs.image }}
     steps:
       - name:  Checkout code
         uses: actions/checkout@v3
@@ -40,11 +40,11 @@ jobs:
           context: .
           file: ./RadencyBack/RadencyBack/Dockerfile
           push: true
-          tags: |
-            ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}
+          tags: ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}
         # expose the fully-qualified image ref as a job output
       - name:  Set output
         run: echo "image=${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}" >> $GITHUB_OUTPUT
+        id: set-output
 
   ## ─── 2) deploy ────────────────────────────────────────────────────────────────
   deploy:
