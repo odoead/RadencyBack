@@ -44,7 +44,7 @@ jobs:
         # expose the fully-qualified image ref as a job output
       - name:  Set output
         id: set-output
-        run: echo "image=${{ACR_LOGIN_SERVER}}/coworking-svc:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+        run: echo "image=$ACR_LOGIN_SERVER/coworking-svc:$GITHUB_SHA" >> $GITHUB_OUTPUT
         env:
           ACR_LOGIN_SERVER: ${{ env.ACR_LOGIN_SERVER }}
           GITHUB_SHA: ${{ github.sha }}
