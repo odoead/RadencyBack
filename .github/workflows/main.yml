@@ -43,8 +43,11 @@ jobs:
           tags: ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}
         # expose the fully-qualified image ref as a job output
       - name:  Set output
-        run: echo "image=${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}" >> $GITHUB_OUTPUT
         id: set-output
+        run: echo "image=${{ACR_LOGIN_SERVER}}/coworking-svc:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+        env:
+          ACR_LOGIN_SERVER: ${{ env.ACR_LOGIN_SERVER }}
+          GITHUB_SHA: ${{ github.sha }}
 
   ## ─── 2) deploy ────────────────────────────────────────────────────────────────
   deploy:
