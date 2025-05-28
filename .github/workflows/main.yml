@@ -37,8 +37,8 @@ jobs:
         id: build-push
         uses: docker/build-push-action@v3
         with:
-          context: ./RadencyBack
-          file: ./RadencyBack/Dockerfile
+          context: ./RadencyBack/RadencyBack
+          file: Dockerfile
           push: true
           tags: |
             ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}
