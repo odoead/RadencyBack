@@ -21,14 +21,14 @@ namespace RadencyBack.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<BookingDTO>>> GetAllBookings()
+        public async Task<ActionResult<List<GetBookingDTO>>> GetAllBookings()
         {
             var bookings = await bookingService.GetAllBookingsAsync();
             return Ok(bookings);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookingDTO>> GetBookingByID(int id)
+        public async Task<ActionResult<GetBookingDTO>> GetBookingByID(int id)
         {
             var booking = await bookingService.GetBookingByIdAsync(id);
 
@@ -38,7 +38,7 @@ namespace RadencyBack.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BookingDTO>> CreateBooking([FromBody] CreateBookingDTO createBookingDto)
+        public async Task<ActionResult<GetBookingDTO>> CreateBooking([FromBody] CreateBookingDTO createBookingDto)
         {
             var validationResult = await createValidator.ValidateAsync(createBookingDto);
             if (!validationResult.IsValid)
@@ -48,7 +48,7 @@ namespace RadencyBack.Controllers
 
             try
             {
-                var booking = await bookingService.CreateBookingAsync(createBookingDto.Name, createBookingDto.Email, createBookingDto.WorkspaceUnitId, createBookingDto.StartTimeUTC, createBookingDto.EndTimeUTC);
+                var booking = await bookingService.CreateBookingAsync(createBookingDto.Name, createBookingDto.Email, createBookingDto.WorkspaceUnitId, StartTimeLOC: createBookingDto.StartTimeLOC, EndTimeLOC: createBookingDto.EndTimeLOC, createBookingDto.TimeZoneId);
                 return CreatedAtAction(nameof(GetBookingByID), new { id = booking.Id }, booking);
             }
             catch (InvalidOperationException ex)
@@ -58,7 +58,7 @@ namespace RadencyBack.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<BookingDTO>> UpdateBookingByID(int id, [FromBody] UpdateBookingDTO updateBookingDto)
+        public async Task<ActionResult<GetBookingDTO>> UpdateBookingByID(int id, [FromBody] UpdateBookingDTO updateBookingDto)
         {
             var validationResult = await updateValidator.ValidateAsync(updateBookingDto);
             if (!validationResult.IsValid)
@@ -68,7 +68,7 @@ namespace RadencyBack.Controllers
 
             try
             {
-                var booking = await bookingService.UpdateBookingAsync(id, updateBookingDto.WorkspaceUnitId, updateBookingDto.StartTimeUTC, updateBookingDto.EndTimeUTC);
+                var booking = await bookingService.UpdateBookingAsync(id, updateBookingDto.WorkspaceUnitId, StartTimeLOC: updateBookingDto.StartTimeLOC, EndTimeLOC: updateBookingDto.EndTimeLOC, updateBookingDto.TimeZoneId);
 
                 if (booking == null)
                     return NotFound();

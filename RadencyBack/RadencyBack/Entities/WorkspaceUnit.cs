@@ -11,6 +11,7 @@ namespace RadencyBack.Entities
         [ForeignKey("CoworkingId")]
         public Coworking Coworking { get; set; }
         public int CoworkingId { get; set; }
+
         public ICollection<Booking> Bookings { get; set; }
 
     }

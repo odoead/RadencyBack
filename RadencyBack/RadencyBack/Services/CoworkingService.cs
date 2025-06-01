@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RadencyBack.DTO.coworking;
 using RadencyBack.Entities;
+using RadencyBack.Exceptions;
 using RadencyBack.Interfaces;
 using RadencyBack.NewFolder;
 
@@ -56,16 +57,28 @@ namespace RadencyBack.Services
 
 
 
-        public async Task<bool> CheckAvailabilityAsync(int WorkspaceUnitId, DateTime StartTimeUTC, DateTime EndTimeUTC, int? ExcludeBookingId)
+        public async Task<bool> CheckAvailabilityUTCAsync(int workspaceUnitId, DateTime startTimeUTC, DateTime endTimeUTC, int? excludeBookingId)
         {
-            var conflictingBookings = await dbcontext.Bookings
-                .Where(b => b.WorkspaceUnitId == WorkspaceUnitId && b.StartTimeUTC < EndTimeUTC && b.EndTimeUTC > StartTimeUTC)
-                .Where(b => ExcludeBookingId == null || b.Id != ExcludeBookingId)
+            return !await dbcontext.Bookings
+                .Where(b => b.WorkspaceUnitId == workspaceUnitId &&
+                            b.StartTimeUTC < endTimeUTC &&
+                            b.EndTimeUTC > startTimeUTC &&
+                            (excludeBookingId == null || b.Id != excludeBookingId))
                 .AnyAsync();
-
-            return !conflictingBookings;
         }
 
+        public async Task<bool> CheckAvailabilityLOCAsync(int workspaceUnitId, DateTime startTimeLOC, DateTime endTimeLOC, int? excludeBookingId)
+        {
+            var timeZoneId = await dbcontext.Bookings
+                .Where(b => b.WorkspaceUnitId == workspaceUnitId)
+                .Select(b => b.TimeZoneId)
+                .FirstOrDefaultAsync() ?? throw new BadRequestException("Workspace doesn't exist");
+
+            var startTimeUTC = TimezoneConverter.GetUtcFromLocal(startTimeLOC, timeZoneId);
+            var endTimeUTC = TimezoneConverter.GetUtcFromLocal(endTimeLOC, timeZoneId);
+
+            return await CheckAvailabilityUTCAsync(workspaceUnitId, startTimeUTC, endTimeUTC, excludeBookingId);
+        }
 
 
         private static int GetWorkspaceCapacity(WorkspaceUnit workspace)

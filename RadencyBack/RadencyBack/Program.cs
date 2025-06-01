@@ -70,10 +70,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Seed data
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<CoworkingDbContext>();
-//    await SeedData(context);
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<Context>();
+    await Seeder.SeedDataAsync(context);
+}
 
 app.Run();

@@ -1,12 +1,25 @@
-﻿namespace RadencyBack.DTO.coworking
+﻿using System.Text.Json.Serialization;
+
+namespace RadencyBack.DTO.coworking
 {
     public class CoworkingDetailsDTO
     {
+        [JsonPropertyName("id")]
         public int Id { get; set; }
-        public string Name { get; set; }  
-        public string Address { get; set; }  
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("address")]
+        public string Address { get; set; }
+
+        [JsonPropertyName("workspaceTypes")]
         public List<WorkspacesByTypeDTO> WorkspaceTypes { get; set; }
+
+        [JsonPropertyName("amenities")]
         public List<AmenityDTO> Amenities { get; set; }
+
+        [JsonPropertyName("photoUrls")]
         public List<string> PhotoUrls { get; set; }
     }
 }

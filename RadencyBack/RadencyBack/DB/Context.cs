@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RadencyBack.Entities;
+using System.Reflection;
 
 namespace RadencyBack.NewFolder
 {
@@ -23,13 +24,38 @@ namespace RadencyBack.NewFolder
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             modelBuilder.Entity<WorkspaceUnit>().HasDiscriminator<string>("WorkspaceType")
-               .HasValue<OpenWorkspaceUnit>("Open")
-               .HasValue<PrivateWorkspaceUnit>("Private")
-               .HasValue<MeetingWorkspaceUnit>("Meeting");
+                .HasValue<OpenWorkspaceUnit>("Open")
+                .HasValue<PrivateWorkspaceUnit>("Private")
+                .HasValue<MeetingWorkspaceUnit>("Meeting");
 
-            //seeddata
+            modelBuilder.Entity<WorkspaceAmenity>().HasKey(pav => new { pav.CoworkingId, pav.AmenityId });
+            modelBuilder
+                .Entity<WorkspaceAmenity>()
+                .HasOne(wa => wa.Coworking)
+                .WithMany(c => c.WorkspaceAmenities)
+                .HasForeignKey(wa => wa.CoworkingId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder
+                .Entity<WorkspaceAmenity>()
+                .HasOne(wa => wa.Amenity)
+                .WithMany(a => a.WorkspaceAmenities)
+                .HasForeignKey(wa => wa.AmenityId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Ensure Booking DateTime properties are stored as UTC
+            /*  modelBuilder.Entity<Booking>()
+                  .Property(b => b.StartTimeLOC)
+                  .HasConversion(q => q.Kind == DateTimeKind.Utc ? q : q.ToUniversalTime(), q => DateTime.SpecifyKind(q, DateTimeKind.Utc));
+
+              modelBuilder.Entity<Booking>()
+                  .Property(b => b.EndTimeLOC)
+                  .HasConversion(q => q.Kind == DateTimeKind.Utc ? q : q.ToUniversalTime(), q => DateTime.SpecifyKind(q, DateTimeKind.Utc));
+          */
         }
+
+
     }
 }
