@@ -7,17 +7,17 @@ namespace RadencyBack.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class CoworkingsController : ControllerBase
+    public class CoworkingController : ControllerBase
     {
         private readonly ICoworkingService coworkingService;
 
-        public CoworkingsController(ICoworkingService coworkingService)
+        public CoworkingController(ICoworkingService coworkingService)
         {
             this.coworkingService = coworkingService;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CoworkingDetailsDTO>> GetCoworkingDetailsByID(int id)
+        public async Task<ActionResult<GetCoworkingDetailsDTO>> GetCoworkingDetailsByID(int id)
         {
             var coworking = await coworkingService.GetCoworkingDetailsAsync(id);
             if (coworking == null)
@@ -31,6 +31,13 @@ namespace RadencyBack.Controllers
         {
             var isAvailable = await coworkingService.CheckAvailabilityLOCAsync(availabilityCheck.WorkspaceUnitId, availabilityCheck.StartTimeLOC, availabilityCheck.EndTimeLOC, availabilityCheck.ExcludeBookingId);
             return Ok(isAvailable);
+        }
+
+        [HttpGet("unavailable-ranges/{workspaceUnitId}")]
+        public async Task<ActionResult<GetUnavailableWorkspaceUnitLOCRangesDTO>> GetUnavailableWorkspaceUnitLOCRanges(int workspaceUnitId, [FromQuery] int? excludeBookingId = null)
+        {
+            var unavailableRanges = await coworkingService.GetUnavailableWorkspaceUnitLOCRangesAsync(workspaceUnitId, excludeBookingId);
+            return Ok(unavailableRanges);
         }
     }
 }

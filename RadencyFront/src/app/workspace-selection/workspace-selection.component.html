@@ -16,16 +16,14 @@
 
     <div class="workspace-units" *ngIf="filteredUnits.length > 0">
         <h4 class="units-header">
-            Select Desks :
-        </h4>
+            Select Desk : </h4>
 
         <div class="units-grid">
             <mat-card *ngFor="let unit of filteredUnits" class="unit-card" [class.selected]="isUnitSelected(unit.id)"
-                [class.unavailable]="!unit.isAvailable" (click)="toggleUnit(unit)">
-
+                [class.unavailable]="!unit.isAvailable" (click)="selectUnit(unit)">
                 <div class="unit-content">
                     <mat-checkbox [checked]="isUnitSelected(unit.id)" [disabled]="!unit.isAvailable"
-                        (change)="onCheckboxChange(unit, $event)" (click)="$event.stopPropagation()">
+                        (change)="onCheckboxChange(unit, $event);" (click)="$event.stopPropagation()">
                     </mat-checkbox>
 
                     <div class="unit-info">
@@ -44,10 +42,10 @@
             </mat-card>
         </div>
 
-        <div class="selection-summary" *ngIf="selectedUnits.length > 0">
+        <div class="selection-summary" *ngIf="selectedUnit !== null">
             <mat-chip-set>
-                <mat-chip *ngFor="let unitId of selectedUnits" [removable]="true" (removed)="removeUnit(unitId)">
-                    Desk #{{ unitId }}
+                <mat-chip [removable]="true" (removed)="removeUnit()">
+                    Desk #{{ selectedUnit }}
                     <mat-icon matChipRemove fontIcon="cancel"></mat-icon>
                 </mat-chip>
             </mat-chip-set>

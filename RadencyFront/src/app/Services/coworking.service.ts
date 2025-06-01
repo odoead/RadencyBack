@@ -1,10 +1,11 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CoworkingDetails, } from '../Entities/CoworkingDetails';
 import { catchError, Observable, throwError } from 'rxjs';
 import { AvailabilityCheck } from '../Entities/AvailabilityCheck';
 import { environment } from '../../environments/environment';
 import { HeadersService } from './headers.service';
+import { UnavailableWorkspaceUnitLOCRanges, } from '../Entities/UnavailableWorkspaceUnitLOCRanges';
 
 @Injectable({
   providedIn: 'root'
@@ -29,5 +30,16 @@ export class CoworkingService {
   private handleError(error: HttpErrorResponse) {
     console.error('CoworkingService error:', error);
     return throwError(() => new Error('An error occurred. Please try again later.'));
+  }
+
+  getUnavailableWorkspaceUnitLOCRanges(workspaceUnitId: number, isPageLoad: boolean, excludeBookingId?: number): Observable<UnavailableWorkspaceUnitLOCRanges> {
+    isPageLoad ? HeadersService.setPageLoad() : undefined;
+
+    let params = new HttpParams();
+    if (excludeBookingId !== undefined && excludeBookingId !== null) {
+      params = params.set('excludeBookingId', excludeBookingId.toString());
+    }
+    return this.http.get<UnavailableWorkspaceUnitLOCRanges>(`${this.apiUrl}/unavailable-ranges/${workspaceUnitId}`, { params })
+      .pipe(catchError(this.handleError));
   }
 }

@@ -7,10 +7,10 @@ namespace RadencyBack.DTO.coworking
         [JsonPropertyName("workspaceUnitId")]
         public int WorkspaceUnitId { get; set; }
 
-        [JsonPropertyName("startTimeUTC")]
+        [JsonPropertyName("startTimeLOC")]
         public DateTime StartTimeLOC { get; set; }
 
-        [JsonPropertyName("endTimeUTC")]
+        [JsonPropertyName("endTimeLOC")]
         public DateTime EndTimeLOC { get; set; }
 
         [JsonPropertyName("excludeBookingId")]

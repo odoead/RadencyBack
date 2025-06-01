@@ -2,7 +2,7 @@
 
 namespace RadencyBack.DTO.coworking
 {
-    public class CoworkingDetailsDTO
+    public class GetCoworkingDetailsDTO
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }

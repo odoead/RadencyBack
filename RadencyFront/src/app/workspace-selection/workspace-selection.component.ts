@@ -10,7 +10,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-workspace-selection',
@@ -26,12 +26,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   templateUrl: './workspace-selection.component.html',
   styleUrl: './workspace-selection.component.scss'
 })
+
 export class WorkspaceSelectionComponent implements OnInit, OnChanges {
   @Input() workspaceTypes: WorkspacesByType[] = [];
   @Input() selectedWorkspaceType: WorkspacesTypes | null = null;
-  @Input() selectedUnits: number[] = [];
+  @Input() selectedUnit: number | null = null;
   @Output() workspaceTypeChange = new EventEmitter<WorkspacesTypes>();
-  @Output() unitsChange = new EventEmitter<number[]>();
+  @Output() unitChange = new EventEmitter<number | null>();
 
   workspaceTypeControl = new FormControl<WorkspacesTypes | null>(null);
   filteredUnits: BookableWorkspaceUnit[] = [];
@@ -71,17 +72,15 @@ export class WorkspaceSelectionComponent implements OnInit, OnChanges {
     }
   }
 
-
-
   onWorkspaceTypeChange(): void {
     const chosenType = this.workspaceTypeControl.value;
     if (chosenType) {
       this.workspaceTypeChange.emit(chosenType);
-      this.unitsChange.emit([]);
+      this.unitChange.emit(null); // Deselect unit when type changes
     }
   }
 
-  toggleUnit(unit: BookableWorkspaceUnit): void {
+  /*toggleUnit(unit: BookableWorkspaceUnit): void {
     if (!unit.isAvailable) return;
 
     const newSelection = [...this.selectedUnits];
@@ -92,21 +91,30 @@ export class WorkspaceSelectionComponent implements OnInit, OnChanges {
     } else {
       newSelection.push(unit.id);
     }
-    this.unitsChange.emit(newSelection);
-  }
+    this.unitChange.emit(newSelection);
+  }*/
 
   onCheckboxChange(unit: BookableWorkspaceUnit, event: any): void {
     event.stopPropagation();
-    this.toggleUnit(unit);
+    this.selectUnit(unit);
   }
 
-  removeUnit(unitId: number): void {
-    const newSelection = this.selectedUnits.filter(id => id !== unitId);
-    this.unitsChange.emit(newSelection);
+  selectUnit(unit: BookableWorkspaceUnit): void {
+    if (!unit.isAvailable) return;
+
+    if (this.selectedUnit === unit.id) {
+      this.unitChange.emit(null);
+    } else {
+      this.unitChange.emit(unit.id);
+    }
+  }
+
+  removeUnit(): void {
+    this.unitChange.emit(null);
   }
 
   isUnitSelected(unitId: number): boolean {
-    return this.selectedUnits.includes(unitId);
+    return this.selectedUnit === unitId;
   }
 
   getWorkspaceIcon(type: string): string {
@@ -134,19 +142,22 @@ export class WorkspaceSelectionComponent implements OnInit, OnChanges {
         return type;
     }
   }
+
   getAvailableCount(type: WorkspacesByType): number {
     return type.units.filter(unit => unit.isAvailable).length;
   }
 
   getStatusText(unit: BookableWorkspaceUnit): string {
     if (!unit.isAvailable) return 'Unavailable';
-    if (unit.hasCurrentBooking) return 'Your booking';
+    if (unit.hasCurrentBooking) return 'Your booking'; // Assuming 'hasCurrentBooking' implies it's the user's own booking
+    if (this.selectedUnit === unit.id) return 'Selected';
     return 'Available';
   }
 
   getStatusClass(unit: BookableWorkspaceUnit): string {
     if (!unit.isAvailable) return 'unavailable';
     if (unit.hasCurrentBooking) return 'current-booking';
+    if (this.selectedUnit === unit.id) return 'selected';
     return 'available';
   }
 

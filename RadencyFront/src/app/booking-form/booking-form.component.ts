@@ -50,7 +50,7 @@ export class BookingFormComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       workspaceType: [null, Validators.required],
-      selectedUnits: [[], Validators.required],
+      selectedUnit: [null, Validators.required],
       dateTimeRange: [null, Validators.required]
     });
 
@@ -60,7 +60,6 @@ export class BookingFormComponent implements OnInit {
       this.mode = params['id'] ? 'edit' : 'new';
       this.bookingId = params['id'] ? +params['id'] : undefined;
     }), switchMap(() => {
-      // load coworking details (to get all workspace types/units)
       return this.coworkingService.getCoworkingDetailsById(this.coworkingId, true);
     }),
       tap(cw => {
@@ -79,11 +78,12 @@ export class BookingFormComponent implements OnInit {
       }
     });
 
-    this.form.get('selectedUnits')!.valueChanges.subscribe(units => {
-      if (units && units.length > 0) {
-        this.bookingService.getUnavailableRanges(units[0]).subscribe(ranges => {
-          this.unavailableRanges = ranges;
-        });
+    this.form.get('selectedUnit')!.valueChanges.subscribe((unit: number | null) => {
+      if (unit !== null) {
+        this.coworkingService.getUnavailableWorkspaceUnitLOCRanges(unit, true, this.mode === 'edit' ? this.bookingId : undefined)
+          .subscribe(rangesObj => {
+            this.unavailableRanges = rangesObj.unavailableRanges || [];
+          });
       } else {
         this.unavailableRanges = [];
       }
@@ -95,7 +95,7 @@ export class BookingFormComponent implements OnInit {
       name: b.userId,
       email: b.userEmail,
       workspaceType: b.workspaceType,
-      selectedUnits: [b.workspaceUnitId],
+      selectedUnit: [b.workspaceUnitId],
       dateTimeRange: {
         start: new Date(b.startTimeLOC),
         end: new Date(b.endTimeLOC),
@@ -106,11 +106,11 @@ export class BookingFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
 
-    const { name, email, workspaceType, selectedUnits, dateTimeRange } = this.form.value;
+    const { name, email, workspaceType, selectedUnit, dateTimeRange } = this.form.value;
     let payload: CreateBooking | UpdateBooking;
     if (this.mode === 'new') {
       payload = {
-        workspaceUnitId: selectedUnits[0],
+        workspaceUnitId: selectedUnit,
         startTimeLOC: dateTimeRange.start.toISOString(),
         endTimeLOC: dateTimeRange.end.toISOString(),
         name: name,
@@ -119,7 +119,7 @@ export class BookingFormComponent implements OnInit {
       };
     } else {
       payload = {
-        workspaceUnitId: selectedUnits[0],
+        workspaceUnitId: selectedUnit,
         startTimeLOC: dateTimeRange.start.toISOString(),
         endTimeLOC: dateTimeRange.end.toISOString(),
         timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone

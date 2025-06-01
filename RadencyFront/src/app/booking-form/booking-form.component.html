@@ -19,9 +19,9 @@
         <app-workspace-selection 
             [workspaceTypes]="workspaceTypes" 
             [selectedWorkspaceType]="form.value.workspaceType"
-            [selectedUnits]="form.value.selectedUnits"
+            [selectedUnit]="form.value.selectedUnit"
             (workspaceTypeChange)="form.get('workspaceType')!.setValue($event)"
-            (unitsChange)="form.get('selectedUnits')!.setValue($event)">
+            (unitsChange)="form.get('selectedUnit')!.setValue($event)">
         </app-workspace-selection>
 
         <!-- date & time -->

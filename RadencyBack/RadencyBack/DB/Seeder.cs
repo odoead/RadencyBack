@@ -95,6 +95,43 @@ namespace RadencyBack.DB
                         EndTimeUTC = new DateTime(2025, 6, 2, 12, 0, 0, DateTimeKind.Utc),
                         TimeZoneId = "Europe/Berlin",
                         UserInfoId = 2
+                    },
+                    new Booking
+                    {
+                        Id = 3,
+                        WorkspaceUnitId = 2,
+                        StartTimeUTC = new DateTime(2025, 7, 2, 10, 0, 0, DateTimeKind.Utc),
+                        EndTimeUTC = new DateTime(2025, 7, 2, 12, 0, 0, DateTimeKind.Utc),
+                        TimeZoneId = "Europe/London",
+                        UserInfoId = 2
+                    },
+                    new Booking
+                    {
+                        Id = 4,
+                        WorkspaceUnitId = 2,
+                        StartTimeUTC = new DateTime(2025, 7, 4, 10, 0, 0, DateTimeKind.Utc),
+                        EndTimeUTC = new DateTime(2025, 7, 4, 12, 0, 0, DateTimeKind.Utc),
+                        TimeZoneId = "Europe/London",
+                        UserInfoId = 2
+                    },
+
+                     new Booking
+                     {
+                         Id = 5,
+                         WorkspaceUnitId = 2,
+                         StartTimeUTC = DateTime.Parse("2025-07-15T10:00:00.000").ToUniversalTime(),
+                         EndTimeUTC = DateTime.Parse("2025-07-15T12:00:00.000").ToUniversalTime(),
+                         TimeZoneId = "Europe/London",
+                         UserInfoId = 2
+                     },
+                    new Booking
+                    {
+                        Id = 6,
+                        WorkspaceUnitId = 2,
+                        StartTimeUTC = DateTime.Parse("2025-07-18T10:00:00.000").ToUniversalTime(),
+                        EndTimeUTC = DateTime.Parse("2025-07-18T12:00:00.000").ToUniversalTime(),
+                        TimeZoneId = "Europe/London",
+                        UserInfoId = 2
                     }
                 );
             }
