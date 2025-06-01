@@ -1,0 +1,26 @@
+<div class="container" *ngIf="coworking$ | async as coworking">
+    <div class="page-header">
+        <h1>{{ coworking.name }}</h1>
+        <p>{{ coworking.address }}</p>
+    </div>
+
+    <mat-grid-list cols="1" rowHeight="200px" gutterSize="16px">
+        <mat-grid-tile>
+            <img mat-card-image [src]="url" *ngFor="let url of coworking.photoUrls" />
+        </mat-grid-tile>
+    </mat-grid-list>
+
+    <section class="amenities">
+        <h2>Amenities</h2>
+        <app-amenities-list [amenities]="coworking.amenities"></app-amenities-list>
+    </section>
+
+    <section class="workspaces">
+        <h2>Workspaces</h2>
+        <div class="workspace-list">
+            <app-workspace-card *ngFor="let workspace of coworking.workspaceTypes" [workspace]="workspace"
+                (bookNow)="onBookNow(workspace)">
+            </app-workspace-card>
+        </div>
+    </section>
+</div>

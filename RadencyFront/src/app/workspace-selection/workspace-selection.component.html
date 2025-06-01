@@ -1,0 +1,61 @@
+<div class="workspace-selection">
+    <mat-form-field appearance="outline" class="workspace-type-select">
+        <mat-label>Workspace Type</mat-label>
+        <mat-select [formControl]="workspaceTypeControl" (selectionChange)="onWorkspaceTypeChange()">
+            <mat-option *ngFor="let type of availableTypes" [value]="type.type">
+                <div class="workspace-option">
+                    <mat-icon [fontIcon]="getWorkspaceIcon(type.type)"></mat-icon>
+                    <span>{{ getWorkspaceTitle(type.type) }}</span>
+                    <mat-chip class="availability-chip">
+                        {{ getAvailableCount(type) }} available
+                    </mat-chip>
+                </div>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div class="workspace-units" *ngIf="filteredUnits.length > 0">
+        <h4 class="units-header">
+            Select Desks :
+        </h4>
+
+        <div class="units-grid">
+            <mat-card *ngFor="let unit of filteredUnits" class="unit-card" [class.selected]="isUnitSelected(unit.id)"
+                [class.unavailable]="!unit.isAvailable" (click)="toggleUnit(unit)">
+
+                <div class="unit-content">
+                    <mat-checkbox [checked]="isUnitSelected(unit.id)" [disabled]="!unit.isAvailable"
+                        (change)="onCheckboxChange(unit, $event)" (click)="$event.stopPropagation()">
+                    </mat-checkbox>
+
+                    <div class="unit-info">
+                        <div class="unit-id">
+                            Desk #{{ unit.id }}
+                        </div>
+                        <div class="unit-capacity" *ngIf="selectedWorkspaceType !== workspaceTypesEnum.OpenSpace">
+                            <mat-icon fontIcon="people"></mat-icon>
+                            {{ unit.capacity }} people
+                        </div>
+                        <div class="unit-status" [class]="getStatusClass(unit)">
+                            {{ getStatusText(unit) }}
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+
+        <div class="selection-summary" *ngIf="selectedUnits.length > 0">
+            <mat-chip-set>
+                <mat-chip *ngFor="let unitId of selectedUnits" [removable]="true" (removed)="removeUnit(unitId)">
+                    Desk #{{ unitId }}
+                    <mat-icon matChipRemove fontIcon="cancel"></mat-icon>
+                </mat-chip>
+            </mat-chip-set>
+        </div>
+    </div>
+
+    <div class="no-units" *ngIf="selectedWorkspaceType && filteredUnits.length === 0">
+        <mat-icon fontIcon="info"></mat-icon>
+        <p>No available desks for this type.</p>
+    </div>
+</div>

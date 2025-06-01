@@ -1,0 +1,43 @@
+<div class="container">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- user info -->
+        <div class="form-row">
+            <mat-form-field class="form-field">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" />
+                <mat-error *ngIf="form.get('name')?.hasError('required')">Required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="form-field">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" />
+                <mat-error *ngIf="form.get('email')?.hasError('email')">Invalid email</mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- workspace selection -->
+        <app-workspace-selection 
+            [workspaceTypes]="workspaceTypes" 
+            [selectedWorkspaceType]="form.value.workspaceType"
+            [selectedUnits]="form.value.selectedUnits"
+            (workspaceTypeChange)="form.get('workspaceType')!.setValue($event)"
+            (unitsChange)="form.get('selectedUnits')!.setValue($event)">
+        </app-workspace-selection>
+
+        <!-- date & time -->
+        <app-calendar [unavailableRanges]="unavailableRanges" 
+            [workspaceType]="form.value.workspaceType"
+            [selectedRange]="form.value.dateTimeRange" (rangeChange)="form.get('dateTimeRange')!.setValue($event)"
+            (validationChange)="
+        form.get('dateTimeRange')!.setErrors($event ? null : { invalid: true })
+      ">
+        </app-calendar>
+
+        <!-- submit -->
+        <div class="btn-group end">
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+                {{ mode === "new" ? "Book Now" : "Save" }}
+            </button>
+        </div>
+    </form>
+</div>

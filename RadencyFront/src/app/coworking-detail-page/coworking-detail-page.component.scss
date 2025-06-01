@@ -1,0 +1,14 @@
+.container {
+    margin: var(--spacing-lg) auto;
+}
+
+.amenities,
+.workspaces {
+    margin-top: var(--spacing-xl);
+}
+
+.workspace-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+}

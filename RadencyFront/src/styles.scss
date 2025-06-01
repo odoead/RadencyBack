@@ -1,0 +1,150 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@include mat.core();
+
+
+html,
+body {
+    height: 100%;
+}
+
+:root {
+    --primary-color: #1976d2;
+    --accent-color: #94c9ff;
+    --warn-color: #f44336;
+    --success-color: #4caf50;
+    --background-color: #fafafa;
+    --surface-color: #ffffff;
+    --text-primary: rgba(0, 0, 0, 0.87);
+    --text-secondary: rgba(0, 0, 0, 0.6);
+    --border-color: rgba(0, 0, 0, 0.12);
+    --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --border-radius: 8px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.page-header {
+    margin-bottom: var(--spacing-xl);
+
+    h1 {
+        font-size: 2rem;
+        color: var(--text-primary);
+    }
+
+    p {
+        color: var(--text-secondary);
+        margin-top: var(--spacing-sm);
+    }
+}
+
+.card {
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+
+    &:hover {
+        box-shadow: var(--shadow);
+        transition: box-shadow 0.2s ease;
+    }
+}
+
+.btn-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+
+    &.center {
+        justify-content: center;
+    }
+
+    &.end {
+        justify-content: flex-end;
+    }
+}
+
+.form-row {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+
+    .form-field {
+        flex: 1;
+    }
+}
+
+.error-message {
+    color: var(--warn-color);
+    font-size: 0.8rem;
+    margin-top: var(--spacing-xs);
+}
+
+.success-message {
+    color: var(--success-color);
+    font-size: 0.8rem;
+    margin-top: var(--spacing-xs);
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-secondary);
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: var(--spacing-md);
+        opacity: 0.5;
+    }
+}
+
+/*mobile*/
+@media (max-width: 768px) {
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .btn-group {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+        }
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+}

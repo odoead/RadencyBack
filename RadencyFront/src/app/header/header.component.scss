@@ -1,0 +1,117 @@
+.header-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: none;
+    padding: 0 var(--spacing-md);
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.25rem;
+    color: white;
+
+    .logo-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--spacing-sm);
+
+    a {
+        color: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+
+        &:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &.active-link {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+
+.mobile-nav {
+    display: none;
+
+    button {
+        color: white;
+    }
+}
+
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--primary-color);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow);
+
+    &.open {
+        display: flex;
+    }
+
+    a {
+        color: rgba(255, 255, 255, 0.9);
+        justify-content: flex-start;
+        margin-bottom: var(--spacing-sm);
+
+        &:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &.active-link {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .mobile-nav {
+        display: block;
+    }
+
+    .header-content {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .logo-section .logo-text {
+        font-size: 1rem;
+    }
+}
