@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RadencyBack.DTO;
 using RadencyBack.DTO.coworking;
 using RadencyBack.Entities;
 using RadencyBack.Exceptions;
@@ -16,11 +17,12 @@ namespace RadencyBack.Services
             dbcontext = context;
         }
 
-        public async Task<CoworkingDetailsDTO?> GetCoworkingDetailsAsync(int coworkingId)
+        public async Task<GetCoworkingDetailsDTO?> GetCoworkingDetailsAsync(int coworkingId)
         {
             var coworking = await dbcontext.Coworkings.Include(c => c.Workspaces).ThenInclude(w => w.Bookings)
                 .Include(c => c.WorkspaceAmenities).ThenInclude(wa => wa.Amenity)
-                .Include(c => c.Photos).FirstOrDefaultAsync(c => c.Id == coworkingId);
+                .Include(c => c.Photos).FirstOrDefaultAsync(c => c.Id == coworkingId) ??
+                throw new NotFoundException($"Coworking with id {coworkingId} not found.");
 
             if (coworking == null) return null;
 
@@ -38,7 +40,7 @@ namespace RadencyBack.Services
                     }).ToList(),
                 }).ToList();
 
-            return new CoworkingDetailsDTO
+            return new GetCoworkingDetailsDTO
             {
                 Id = coworking.Id,
                 Name = coworking.Name,
@@ -60,11 +62,10 @@ namespace RadencyBack.Services
         public async Task<bool> CheckAvailabilityUTCAsync(int workspaceUnitId, DateTime startTimeUTC, DateTime endTimeUTC, int? excludeBookingId)
         {
             return !await dbcontext.Bookings
-                .Where(b => b.WorkspaceUnitId == workspaceUnitId &&
-                            b.StartTimeUTC < endTimeUTC &&
-                            b.EndTimeUTC > startTimeUTC &&
-                            (excludeBookingId == null || b.Id != excludeBookingId))
+                .Where(b => b.WorkspaceUnitId == workspaceUnitId && b.StartTimeUTC < endTimeUTC && b.EndTimeUTC > startTimeUTC)
+                .Where(b => (excludeBookingId == null || b.Id != excludeBookingId))
                 .AnyAsync();
+
         }
 
         public async Task<bool> CheckAvailabilityLOCAsync(int workspaceUnitId, DateTime startTimeLOC, DateTime endTimeLOC, int? excludeBookingId)
@@ -91,5 +92,48 @@ namespace RadencyBack.Services
                 _ => 0
             };
         }
+
+        // Returns a list of already booked time ranges for a specific workspace unit in local time
+        public async Task<GetUnavailableWorkspaceUnitLOCRangesDTO> GetUnavailableWorkspaceUnitLOCRangesAsync(int workspaceUnitId, int? excludeBookingId = null)
+        {
+            var workspaceExists = await dbcontext.WorkspaceUnits.AnyAsync(w => w.Id == workspaceUnitId);
+            if (!workspaceExists)
+                throw new NotFoundException($"WorkspaceUnit with id {workspaceUnitId} not found.");
+
+
+            var utcNow = DateTime.UtcNow;
+            var bookings = await dbcontext.Bookings
+                .Where(b => b.WorkspaceUnitId == workspaceUnitId)
+                .Where(q => q.EndTimeUTC > utcNow)
+                .Where(b => (excludeBookingId == null || b.Id != excludeBookingId.Value))
+                .OrderBy(b => b.StartTimeUTC)
+                .ToListAsync();
+            if (bookings.Any() == false)
+            {
+                return new GetUnavailableWorkspaceUnitLOCRangesDTO
+                {
+                    WorkspaceUnitId = workspaceUnitId,
+
+                    UnavailableRanges = new List<DateTimeRangeDTO>(),
+                };
+            }
+
+
+            var dateRanges = new List<DateTimeRangeDTO>();
+            foreach (var booking in bookings)
+            {
+                dateRanges.Add(new DateTimeRangeDTO
+                {
+                    Start = booking.StartTimeOffset.LocalDateTime,
+                    End = booking.EndTimeOffset.LocalDateTime,
+                });
+            }
+            return new GetUnavailableWorkspaceUnitLOCRangesDTO
+            {
+                UnavailableRanges = dateRanges,
+                WorkspaceUnitId = workspaceUnitId,
+            };
+        }
+
     }
 }

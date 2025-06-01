@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RadencyBack.DTO.booking;
 using RadencyBack.Entities;
+using RadencyBack.Exceptions;
 using RadencyBack.Interfaces;
 using RadencyBack.NewFolder;
 
@@ -41,6 +42,8 @@ namespace RadencyBack.Services
         {
             var booking = await dbcontext.Bookings.Include(b => b.UserInfo)
                 .Include(b => b.WorkspaceUnit).ThenInclude(w => w.Coworking).Where(b => b.Id == id).ToListAsync();
+            if (booking.Count == 0)
+                throw new NotFoundException($"Booking with id {id} not found.");
 
             return booking.Select(b => new GetBookingDTO
             {
@@ -64,7 +67,7 @@ namespace RadencyBack.Services
             var doesCoworkingAvailable = await coworkingService.CheckAvailabilityUTCAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, null);
             if (!doesCoworkingAvailable)
             {
-                throw new InvalidOperationException("Selected time is not available. Please choose a different slot.");
+                throw new BadRequestException("Selected time is not available. Please choose a different slot.");
             }
 
             var userInfo = await dbcontext.UserBookingInfos.FirstOrDefaultAsync(u => u.Email == Email);
@@ -95,8 +98,9 @@ namespace RadencyBack.Services
 
         public async Task<GetBookingDTO?> UpdateBookingAsync(int id, int WorkspaceUnitId, DateTime StartTimeLOC, DateTime EndTimeLOC, string TimeZoneId)
         {
-            var booking = await dbcontext.Bookings.FindAsync(id);
-            if (booking == null) return null;
+            var booking = await dbcontext.Bookings.FindAsync(id) ??
+                throw new NotFoundException($"Booking with id {id} not found.");
+             
 
 
             var StartTimeUTC = TimezoneConverter.GetUtcFromLocal(StartTimeLOC, TimeZoneId);
@@ -104,7 +108,7 @@ namespace RadencyBack.Services
             var doesCoworkingAvailable = await coworkingService.CheckAvailabilityUTCAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, id);
             if (!doesCoworkingAvailable)
             {
-                throw new InvalidOperationException("Selected time is not available. Please choose a different slot.");
+                throw new BadRequestException("Selected time is not available. Please choose a different slot.");
             }
 
             booking.WorkspaceUnitId = WorkspaceUnitId;
