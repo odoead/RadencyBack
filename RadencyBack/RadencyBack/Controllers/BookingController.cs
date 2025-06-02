@@ -8,8 +8,8 @@ namespace RadencyBack.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [ProducesResponseType(typeof(ApiErrorResponse),StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(typeof(ApiErrorResponse),StatusCodes.Status501NotImplemented)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status501NotImplemented)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -37,7 +37,7 @@ namespace RadencyBack.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GetBookingDTO), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiErrorResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<GetBookingDTO>> GetBookingByID(int id)
         {
             var booking = await bookingService.GetBookingByIdAsync(id);

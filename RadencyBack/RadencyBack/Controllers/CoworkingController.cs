@@ -13,7 +13,7 @@ namespace RadencyBack.Controllers
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ApiErrorResponse),StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status422UnprocessableEntity)]
     public class CoworkingController : ControllerBase
     {
         private readonly ICoworkingService coworkingService;

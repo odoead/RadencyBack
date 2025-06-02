@@ -10,7 +10,7 @@ import { errorHandlingInterceptor } from './Shared/Interceptors/error-handling.i
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes),
   provideHttpClient(
-    withInterceptors([errorHandlingInterceptor])
+    withInterceptors([/*todo remove  errorHandlingInterceptor*/])
   ),
   provideAnimationsAsync(),
   importProvidersFrom(MatNativeDateModule)]

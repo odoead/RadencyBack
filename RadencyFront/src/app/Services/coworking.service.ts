@@ -12,7 +12,7 @@ import { UnavailableWorkspaceUnitLOCRanges, } from '../Entities/UnavailableWorks
 })
 export class CoworkingService {
 
-  private apiUrl = environment.coworkingUrl;
+  private apiUrl = environment.coworkingUrl + "/api" + "/coworking";
 
   constructor(private http: HttpClient) { }
 

@@ -11,7 +11,7 @@ import { HeadersService } from './headers.service';
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = environment.coworkingUrl;//get from environment
+  private apiUrl = environment.coworkingUrl + "/api" + "/booking";//get from environment
 
 
   constructor(private http: HttpClient) { }
