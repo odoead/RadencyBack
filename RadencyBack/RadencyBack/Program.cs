@@ -7,6 +7,8 @@ using RadencyBack.Exceptions;
 using RadencyBack.Interfaces;
 using RadencyBack.NewFolder;
 using RadencyBack.Services;
+using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,23 @@ var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_S
 
 builder.Services.AddDbContext<Context>(options =>
     options.UseNpgsql(connectionString));
+
+// Swagger config
+builder.Services.AddSwaggerExamples();
+builder.Services.AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Radency Coworking API",
+        Version = "v1",
+    });
+    //var basePath = AppContext.BaseDirectory;
+    //var xmlPath = Path.Combine(basePath, "Coworking.xml");
+    var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
 
 // Services 
 builder.Services.AddScoped<IValidator<Amenity>, AmenityValidator>();
@@ -60,7 +79,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "RadencyBack v1");
+        c.EnableDeepLinking();
+        c.DefaultModelExpandDepth(0);
+    });
 }
 
 app.ConfigureExceptionHandler();

@@ -22,7 +22,7 @@
             //Convert the UTC DateTime to 'Unspecified' so the constructor accepts the offset
             var unspecified = DateTime.SpecifyKind(dateTimeUTC, DateTimeKind.Unspecified);
             return new DateTimeOffset(unspecified, offset);
-           // return new DateTimeOffset(dateTimeUTC, offset);
+            // return new DateTimeOffset(dateTimeUTC, offset);
         }
     }
 }

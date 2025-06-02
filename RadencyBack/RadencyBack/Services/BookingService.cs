@@ -100,7 +100,7 @@ namespace RadencyBack.Services
         {
             var booking = await dbcontext.Bookings.FindAsync(id) ??
                 throw new NotFoundException($"Booking with id {id} not found.");
-             
+
 
 
             var StartTimeUTC = TimezoneConverter.GetUtcFromLocal(StartTimeLOC, TimeZoneId);
