@@ -1,6 +1,6 @@
 export interface Booking{
   id: number;
-  userId: string;
+  userName: string;
   userEmail: string;
   workspaceUnitId: number;
   workspaceType: string;

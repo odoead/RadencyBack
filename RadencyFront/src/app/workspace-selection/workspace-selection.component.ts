@@ -31,7 +31,7 @@ export class WorkspaceSelectionComponent implements OnInit, OnChanges {
   @Input() workspaceTypes: WorkspacesByType[] = [];
   @Input() selectedWorkspaceType: WorkspacesTypes | null = null;
   @Input() selectedUnit: number | null = null;
-  @Output() workspaceTypeChange = new EventEmitter<WorkspacesTypes>();
+  @Output() workspaceTypeChange = new EventEmitter<WorkspacesTypes | null>();
   @Output() unitChange = new EventEmitter<number | null>();
 
   workspaceTypeControl = new FormControl<WorkspacesTypes | null>(null);
@@ -42,43 +42,53 @@ export class WorkspaceSelectionComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.updateAvailableTypes();
-    this.workspaceTypeControl.setValue(this.selectedWorkspaceType);
+    if (this.selectedWorkspaceType) {
+      this.workspaceTypeControl.setValue(this.selectedWorkspaceType, { emitEvent: false });
+    }
     this.updateFilteredUnits();
+
+    this.workspaceTypeControl.valueChanges.subscribe(type => {
+      this.workspaceTypeChange.emit(type);
+      this.unitChange.emit(null);
+      this.selectedUnit = null;
+      this.updateFilteredUnits();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['workspaceTypes']) {
       this.updateAvailableTypes();
+      // If selectedWorkspaceType was already set, re-filtering might be needed
       this.updateFilteredUnits();
     }
     if (changes['selectedWorkspaceType']) {
-      this.workspaceTypeControl.setValue(this.selectedWorkspaceType);
+      if (this.workspaceTypeControl.value !== this.selectedWorkspaceType) {
+        this.workspaceTypeControl.setValue(this.selectedWorkspaceType, { emitEvent: false });
+      }
       this.updateFilteredUnits();
     }
+
   }
 
   updateAvailableTypes(): void {
     this.availableTypes = this.workspaceTypes.filter(type =>
-      type.units.some(unit => unit.isAvailable)
+      type.units && type.units.some(unit => unit.isAvailable)
     );
   }
 
   updateFilteredUnits(): void {
-    if (this.selectedWorkspaceType) {
-      const selectedType = this.workspaceTypes.find(type => type.type === this.selectedWorkspaceType);
-      this.filteredUnits = selectedType ? selectedType.units : [];
+    const currentType = this.workspaceTypeControl.value;
+    if (currentType) {
+      // Search for object whose type == selected type
+      // if found then filter units by isAvailable
+      const typeData = this.workspaceTypes.find(q => q.type === currentType);
+      this.filteredUnits = typeData ? typeData.units.filter(u => u.isAvailable) : []; // Only show available units
     } else {
       this.filteredUnits = [];
     }
   }
 
-  onWorkspaceTypeChange(): void {
-    const chosenType = this.workspaceTypeControl.value;
-    if (chosenType) {
-      this.workspaceTypeChange.emit(chosenType);
-      this.unitChange.emit(null); // Deselect unit when type changes
-    }
-  }
+
 
   /*toggleUnit(unit: BookableWorkspaceUnit): void {
     if (!unit.isAvailable) return;
@@ -104,13 +114,18 @@ export class WorkspaceSelectionComponent implements OnInit, OnChanges {
 
     if (this.selectedUnit === unit.id) {
       this.unitChange.emit(null);
+      this.selectedUnit = null;
     } else {
       this.unitChange.emit(unit.id);
+      this.selectedUnit = unit.id;
     }
   }
 
   removeUnit(): void {
-    this.unitChange.emit(null);
+    if (this.selectedUnit !== null) {
+      this.selectedUnit = null;
+      this.unitChange.emit(null);
+    }
   }
 
   isUnitSelected(unitId: number): boolean {
@@ -144,12 +159,12 @@ export class WorkspaceSelectionComponent implements OnInit, OnChanges {
   }
 
   getAvailableCount(type: WorkspacesByType): number {
-    return type.units.filter(unit => unit.isAvailable).length;
+    return type.units ? type.units.filter(unit => unit.isAvailable).length : 0;
   }
 
   getStatusText(unit: BookableWorkspaceUnit): string {
     if (!unit.isAvailable) return 'Unavailable';
-    if (unit.hasCurrentBooking) return 'Your booking'; // Assuming 'hasCurrentBooking' implies it's the user's own booking
+    if (unit.hasCurrentBooking) return 'Your booking';
     if (this.selectedUnit === unit.id) return 'Selected';
     return 'Available';
   }

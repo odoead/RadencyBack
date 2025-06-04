@@ -20,6 +20,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-calendar',
@@ -31,7 +32,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatCardModule,
     MatFormFieldModule,
     MatButtonModule,
-    MatDatepickerModule,
+    MatDatepickerModule, MatInputModule
   ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
@@ -43,27 +44,38 @@ export class CalendarComponent {
   @Output() rangeChange = new EventEmitter<DateTimeRange | null>();
   @Output() validationChange = new EventEmitter<boolean>();
 
-  startDateControl = new FormControl<Date | null>(null, [Validators.required]);
-  startTimeControl = new FormControl<string>('', [Validators.required]);
-  endDateControl = new FormControl<Date | null>(null, [Validators.required]);
-  endTimeControl = new FormControl<string>('', [Validators.required]);
+  startDateControl = new FormControl<Date | null>(null, Validators.required);
+  startTimeControl = new FormControl<string | null>(null, [Validators.required, this.pastTimeValidator.bind(this)]);
+  endDateControl = new FormControl<Date | null>(null, Validators.required);
+  endTimeControl = new FormControl<string | null>(null, [Validators.required, this.endTimeValidator.bind(this)]);
 
-  minDate = new Date();
+  minDate = new Date().setHours(0, 0, 0, 0);
   maxEndDate: Date | null = null;
 
   ngOnInit(): void {
-    this.setupValidators();
     this.subscribeToChanges();
-    this.initFromSelectedRange();
-    this.updateMaxEndDate();
+    if (this.selectedRange) {
+      this.initFromSelectedRange();
+    }
+    this.updateMaxEndDateConstraint(); // Initial update
+    this.validateAndEmit(); // Initial validation
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedRange'] && !changes['selectedRange'].firstChange) {
+    // Trigger on @input changes
+    if (changes['selectedRange'] && !changes['selectedRange'].firstChange && this.selectedRange !== this.createDateTimeRangeFromControls()) {
       this.initFromSelectedRange();
     }
     if (changes['workspaceType']) {
-      this.updateMaxEndDate();
+      this.updateMaxEndDateConstraint();
+      // When workspace type changes, existing dates might became invalid duration
+      // Then retrigger dependent validations
+      this.startDateControl.updateValueAndValidity();
+      this.endDateControl.updateValueAndValidity();
+      this.validateAndEmit();
+    }
+    if (changes['unavailableRanges']) {
+      this.validateAndEmit();
     }
   }
 
@@ -71,56 +83,26 @@ export class CalendarComponent {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
   }
 
+  //Performs validation of data fields on changes
   private subscribeToChanges(): void {
-    // Update end date constraints when start date changes
-    this.startDateControl.valueChanges.subscribe(() => {
-      this.startTimeControl.updateValueAndValidity();
-      this.endTimeControl.updateValueAndValidity();
-      this.updateMaxEndDate();
-      this.validateFormEmit();
+    this.startDateControl.valueChanges.subscribe((date) => {
+      this.updateMaxEndDateConstraint();
+      if (date) { this.endDateControl.updateValueAndValidity(); } // End date min depends on start date
+      this.startTimeControl.updateValueAndValidity(); // Past time validation depends on start date
+      this.validateAndEmit();
     });
+
     this.startTimeControl.valueChanges.subscribe(() => {
+      this.validateAndEmit();
+    });
+
+    this.endDateControl.valueChanges.subscribe(() => {
       this.endTimeControl.updateValueAndValidity();
-      this.validateFormEmit();
+      this.validateAndEmit();
     });
-
-    // emit overall validity/range whenever any control changes
-    [
-      this.startDateControl,
-      this.startTimeControl,
-      this.endDateControl,
-      this.endTimeControl,
-    ].forEach((ctrl: AbstractControl) => {
-      ctrl.valueChanges.subscribe(() => this.validateFormEmit());
+    this.endTimeControl.valueChanges.subscribe(() => {
+      this.validateAndEmit();
     });
-  }
-
-  private setupValidators(): void {
-    this.startTimeControl.addValidators(this.pastTimeValidator.bind(this));
-    this.endTimeControl.addValidators(this.endTimeValidator.bind(this));
-    this.endTimeControl.addValidators(this.overlapValidator.bind(this));
-
-  }
-
-  private overlapValidator = (): ValidationErrors | null => {
-    const range = this.createDateTimeRange();
-    if (!range) return null;
-    if (this.isOverlapping(range)) {
-      return { overlap: true };
-    }
-    return null;
-  };
-
-  private isOverlapping(range: DateTimeRange): boolean {
-    return this.unavailableRanges.some(
-      (unavailable) =>
-        range.start < unavailable.end && range.end > unavailable.start
-    );
-  }
-
-  isCurrentRangeUnavailable(): boolean {
-    const range = this.createDateTimeRange();
-    return !!range && this.isOverlapping(range);
   }
 
   private initFromSelectedRange(): void {
@@ -129,214 +111,263 @@ export class CalendarComponent {
       this.startTimeControl.reset();
       this.endDateControl.reset();
       this.endTimeControl.reset();
-      return;
-    }
-    const { start, end } = this.selectedRange;
-    this.startDateControl.setValue(start);
-    this.startTimeControl.setValue(this.formatTimeForInput(start));
-    this.endDateControl.setValue(end);
-    this.endTimeControl.setValue(this.formatTimeForInput(end));
-  }
-
-  getMaxDurationDays(): number {
-    switch (this.workspaceType) {
-      case WorkspacesTypes.MeetingRoom:
-        return 1;
-      case WorkspacesTypes.OpenSpace:
-      case WorkspacesTypes.PrivateRoom:
-        return 30;
-      default:
-        return 1;
-    }
-  }
-
-  private updateMaxEndDate(): void {
-    if (this.startDateControl.value && this.workspaceType) {
-      const maxDays = this.getMaxDurationDays();
-      this.maxEndDate = new Date(this.startDateControl.value);
-      this.maxEndDate.setDate(this.maxEndDate.getDate() + maxDays);
-    }
-  }
-
-  private validateFormEmit(): void {
-    const isValid =
-      this.startDateControl.valid &&
-      this.startTimeControl.valid &&
-      this.endDateControl.valid &&
-      this.endTimeControl.valid &&
-      !this.isDurationExceeded();
-
-    this.validationChange.emit(isValid);
-
-    if (isValid) {
-      const range = this.createDateTimeRange();
-      this.rangeChange.emit(range);
     } else {
-      this.rangeChange.emit(null);
+      const { start, end } = this.selectedRange;
+      this.startDateControl.setValue(start ? new Date(start) : null);
+      this.startTimeControl.setValue(start ? this.formatTimeForInput(new Date(start)) : null);
+      this.endDateControl.setValue(end ? new Date(end) : null);
+      this.endTimeControl.setValue(end ? this.formatTimeForInput(new Date(end)) : null);
+    }
+    this.updateMaxEndDateConstraint();
+    this.validateAndEmit();
+  }
+
+
+
+
+  private validateAndEmit(): void {
+    const startDateValid = this.startDateControl.valid;
+    const startTimeValid = this.startTimeControl.valid;
+    const endDateValid = this.endDateControl.valid;
+    const endTimeValid = this.endTimeControl.valid;
+
+    const currentRange = this.createDateTimeRangeFromControls();
+    let isOverlapping = false;
+    let durationExceeded = false;
+
+    if (currentRange) {
+      isOverlapping = this.isOverlapping(currentRange);
+      durationExceeded = this.isDurationExceeded(currentRange);
+    }
+
+    const allControlsValid = startDateValid && startTimeValid && endDateValid && endTimeValid;
+    const overallValid = allControlsValid && currentRange !== null && !isOverlapping && !durationExceeded;
+
+    this.validationChange.emit(overallValid);
+
+    if (overallValid && currentRange) {
+      this.rangeChange.emit(currentRange);
+    } else {
+      this.rangeChange.emit(null); //Retuln null if data not valid or range is incomplete
     }
   }
 
   private pastTimeValidator(control: AbstractControl): ValidationErrors | null {
     if (!control.value || !this.startDateControl?.value) return null;
-    const selectedDate = this.startDateControl.value;
-    const selectedTime = control.value;
-    const now = new Date();
 
-    if (this.isSameDate(selectedDate, now)) {
-      const selectedDateTime = this.combineDateAndTime(
-        selectedDate,
-        selectedTime
-      );
+    // Ensure start date is set and valid
+    const selectedDate = new Date(this.startDateControl.value);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate.getTime() === today.getTime()) {
+      const now = new Date();
+      const selectedDateTime = this.combineDateAndTime(this.startDateControl.value, control.value);
       if (selectedDateTime <= now) {
         return { pastTime: true };
       }
     }
-
     return null;
   }
 
   private endTimeValidator(control: AbstractControl): ValidationErrors | null {
-    if (
-      !control.value ||
-      !this.startDateControl?.value ||
-      !this.startTimeControl?.value ||
-      !this.endDateControl?.value
-    ) {
+    if (!control.value || !this.endDateControl?.value || !this.startDateControl?.value || !this.startTimeControl?.value) {
       return null;
     }
-
-    const startDateTime = this.combineDateAndTime(
-      this.startDateControl.value,
-      this.startTimeControl.value
-    );
-    const endDateTime = this.combineDateAndTime(
-      this.endDateControl.value,
-      control.value
-    );
-
-    if (endDateTime <= startDateTime) {
+    const currentRange = this.createDateTimeRangeFromControls();
+    if (!currentRange || currentRange.end <= currentRange.start) {
       return { invalidEndTime: true };
     }
-
     return null;
   }
 
-  private createDateTimeRange(): DateTimeRange | null {
-    if (
-      !this.startDateControl.value ||
-      !this.startTimeControl.value ||
-      !this.endDateControl.value ||
-      !this.endTimeControl.value
-    ) {
-      return null;
+  private isOverlapping(range: DateTimeRange): boolean {
+    if (!this.unavailableRanges || this.unavailableRanges.length === 0) {
+      return false;
     }
-
-    return {
-      start: this.combineDateAndTime(
-        this.startDateControl.value,
-        this.startTimeControl.value
-      ),
-      end: this.combineDateAndTime(
-        this.endDateControl.value,
-        this.endTimeControl.value
-      ),
-    };
+    return this.unavailableRanges.some((unavailable) => {
+      const unavailableStart = new Date(unavailable.start);
+      const unavailableEnd = new Date(unavailable.end);
+      return range.start < unavailableEnd && range.end > unavailableStart;
+    });
   }
 
-  private combineDateAndTime(date: Date, time: string): Date {
-    const [hours, minutes] = time.split(':').map(Number);
-    const result = new Date(date);
-    result.setHours(hours, minutes, 0, 0);
-    return result;
+  isCurrentRangePotentiallyUnavailable(): boolean {
+    const range = this.createDateTimeRangeFromControls();
+    return !!range && this.isOverlapping(range);
+  }
+
+  private updateMaxEndDateConstraint(): void {
+    if (this.startDateControl.value && this.workspaceType) {
+      const maxDays = this.getMaxDurationDays();
+      const newMaxEndDate = new Date(this.startDateControl.value);
+      newMaxEndDate.setDate(newMaxEndDate.getDate() + maxDays);
+
+      // If meeting room (max 1 day), max end date should be start date for date picker, time handles the rest
+      if (this.workspaceType === WorkspacesTypes.MeetingRoom && maxDays === 1) {
+        this.maxEndDate = new Date(this.startDateControl.value);
+      }
+      else {
+        this.maxEndDate = newMaxEndDate;
+      }
+
+      // If current end date exceeds new max end date, reset or adjust it
+      if (this.endDateControl.value && this.maxEndDate && this.endDateControl.value > this.maxEndDate) {
+        this.endDateControl.setValue(this.maxEndDate);
+      }
+    } else {
+      this.maxEndDate = null;
+    }
+  }
+
+  getMaxDurationDays(): number {
+    switch (this.workspaceType) {
+      case WorkspacesTypes.MeetingRoom: return 1;
+      case WorkspacesTypes.OpenSpace:
+      case WorkspacesTypes.PrivateRoom: return 30;
+      default: return 30; // Default max duration
+    }
+  }
+
+  isDurationExceeded(range: DateTimeRange | null = this.createDateTimeRangeFromControls()): boolean {
+    if (!range || !this.workspaceType) {
+      return false;
+    }
+    const durationMs = range.end.getTime() - range.start.getTime();
+    let maxDurationInMs = this.getMaxDurationDays() * 24 * 60 * 60 * 1000;
+
+
+    // For MeetingRoom, booking cannot exceed 24 hours and should not cross into a second day unless within 24 hours.
+    if (this.workspaceType === WorkspacesTypes.MeetingRoom) {
+      if (durationMs > 24 * 60 * 60 * 1000) {
+        return true;
+      }
+
+    }
+    return durationMs > maxDurationInMs;
+  }
+
+  private combineDateAndTime(date: Date, timeString: string): Date {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const newDate = new Date(date);
+    newDate.setHours(hours, minutes, 0, 0);
+    return newDate;
   }
 
   private formatTimeForInput(date: Date): string {
-    return date.toTimeString().slice(0, 5);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
 
-  private isSameDate(date1: Date, date2: Date): boolean {
-    return date1.toDateString() === date2.toDateString();
-  }
+  getMinStartTime(): string | null {
+    if (!this.startDateControl.value) { return null; }
 
-  getMinTime(): string {
-    if (!this.startDateControl.value) {
-      return '';
-    }
-    const now = new Date();
-    if (this.isSameDate(this.startDateControl.value, now)) {
-      const mins = now.getMinutes();
-      const rounded = Math.ceil(mins / 15) * 15;
-      now.setMinutes(rounded, 0, 0);
+    const selectedStartDate = new Date(this.startDateControl.value);
+    selectedStartDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedStartDate.getTime() === today.getTime()) {
+      const now = new Date();
       return this.formatTimeForInput(now);
     }
-    return '';
+    return '00:00'; // No minimum time on future dates
   }
+
+
+
 
   getMaxDurationText(): string {
-    if (!this.workspaceType) return '';
-
+    if (!this.workspaceType) {
+      return '';
+    }
     const days = this.getMaxDurationDays();
-    return days === 1 ? '1 day' : `${days} days`;
+    return days === 1 ? '24 hours' : `${days} days`;
   }
 
-  isDurationExceeded(): boolean {
-    const range = this.createDateTimeRange();
-    if (!range || !this.workspaceType) return false;
+  formatDuration(range: DateTimeRange | null = this.createDateTimeRangeFromControls()): string {
+    if (!range) { return 'N/A'; }
 
-    const durationMs = range.end.getTime() - range.start.getTime();
-    const maxDurationMs = this.getMaxDurationDays() * 24 * 60 * 60 * 1000;
 
-    return durationMs > maxDurationMs;
+    const durationInMs = range.end.getTime() - range.start.getTime();
+    if (durationInMs <= 0) return 'Invalid duration';
+
+    const days = Math.floor(durationInMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((durationInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((durationInMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+    if (hours > 0) parts.push(`${hours} hour${hours > 1 ? 's' : ''}`);
+    if (minutes > 0) parts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`);
+    return parts.length > 0 ? parts.join(', ') : '0 minutes';
   }
 
-  formatDuration(range: DateTimeRange): string {
-    const durationMs = range.end.getTime() - range.start.getTime();
-    const days = Math.floor(durationMs / (24 * 60 * 60 * 1000));
-    const hours = Math.floor(
-      (durationMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
-    );
-    const minutes = Math.floor((durationMs % (60 * 60 * 1000)) / (60 * 1000));
-
-    const parts = [];
-    if (days > 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
-    if (hours > 0) parts.push(`${hours} hour${hours !== 1 ? 's' : ''}`);
-    if (minutes > 0) parts.push(`${minutes} minute${minutes !== 1 ? 's' : ''}`);
-
-    return parts.join(', ') || '0 minutes';
-  }
 
   getQuickDurations(): { label: string; hours: number }[] {
     if (!this.workspaceType) return [];
-
     const baseOptions = [
+      { label: '1 hour', hours: 1 },
       { label: '2 hours', hours: 2 },
       { label: '4 hours', hours: 4 },
-      { label: '8 hours', hours: 8 },
     ];
 
-    if (this.workspaceType !== WorkspacesTypes.MeetingRoom) {
+    //Book for all day if type is MeetingRoom
+    if (this.workspaceType === WorkspacesTypes.MeetingRoom) {
+      baseOptions.push({ label: 'Full Day (8h)', hours: 8 });
+    }
+    else { // OpenSpace, PrivateRoom
       baseOptions.push(
-        { label: '1 day', hours: 24 },
+        { label: '8 hours', hours: 8 },
+        { label: '1 day (24h)', hours: 24 },
         { label: '3 days', hours: 72 },
         { label: '1 week', hours: 168 }
       );
     }
 
-    return baseOptions;
+    // Filter out durations that would exceed the max allowed for the workspace type
+    const maxAllowedHours = this.getMaxDurationDays() * 24;
+    return baseOptions.filter(d => d.hours <= maxAllowedHours);
   }
 
   setQuickDuration(duration: { label: string; hours: number }): void {
-    if (!this.startDateControl.value || !this.startTimeControl.value) return;
+    if (!this.startDateControl.value || !this.startTimeControl.value) {
+      return;
+    }
+    const startDateTime = this.combineDateAndTime(this.startDateControl.value, this.startTimeControl.value);
+    const endDateTime = new Date(startDateTime.getTime() + duration.hours * 60 * 60 * 1000);
 
-    const startDateTime = this.combineDateAndTime(
-      this.startDateControl.value,
-      this.startTimeControl.value
-    );
-    const endDateTime = new Date(
-      startDateTime.getTime() + duration.hours * 60 * 60 * 1000
-    );
-
-    this.endDateControl.setValue(endDateTime);
-    this.endTimeControl.setValue(this.formatTimeForInput(endDateTime));
+    if (this.maxEndDate && endDateTime > this.combineDateAndTime(this.maxEndDate, '23:59')) {
+      const cappedEndDateTime = this.combineDateAndTime(this.maxEndDate, this.formatTimeForInput(endDateTime)); // keep original time on max date
+      this.endDateControl.setValue(new Date(Math.min(endDateTime.getTime(), cappedEndDateTime.getTime())));
+      this.endTimeControl.setValue(this.formatTimeForInput(new Date(Math.min(endDateTime.getTime(), cappedEndDateTime.getTime()))));
+    } else {
+      this.endDateControl.setValue(endDateTime);
+      this.endTimeControl.setValue(this.formatTimeForInput(endDateTime));
+    }
+    this.validateAndEmit();
   }
+
+  // Helper to compare if current control values match a given DateTimeRange and are valid
+  createDateTimeRangeFromControls(): DateTimeRange | null {
+    if (
+      this.startDateControl.valid && this.startTimeControl.valid &&
+      this.endDateControl.valid && this.endTimeControl.valid &&
+      this.startDateControl.value && this.startTimeControl.value &&
+      this.endDateControl.value && this.endTimeControl.value
+    ) {
+      const start = this.combineDateAndTime(this.startDateControl.value, this.startTimeControl.value);
+      const end = this.combineDateAndTime(this.endDateControl.value, this.endTimeControl.value);
+
+      if (start && end && start < end) {
+        return { start, end };
+      }
+    }
+    return null;
+  }
+
 }

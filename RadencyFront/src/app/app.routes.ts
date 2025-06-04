@@ -12,5 +12,7 @@ export const routes: Routes = [
   { path: 'my-bookings', component: MyBookingsPageComponent },
   { path: 'not-found', component: NotFoundComponent },
   { path: 'errors/:code', component: NotFoundComponent },
+
+  
   { path: 'errors', redirectTo: '/errors/404' },
   { path: '**', redirectTo: '/errors/404' }];
