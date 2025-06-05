@@ -62,14 +62,14 @@ jobs:
       - name:  Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v1
         with: 
-         imageToDeploy: ${{ needs.build.outputs.image }}
+         imageToDeploy: $ACR_LOGIN_SERVER/coworking-svc:$GITHUB_SHA
          resourceGroup: ${{ env.RESOURCE_GROUP }}
          containerAppName: ${{ env.CONTAINERAPP_NAME }}
          environmentVariables: |
            ASPNETCORE_ENVIRONMENT=Production
         
        # imageToDeploy  $ACR_LOGIN_SERVER/coworking-svc:$GITHUB_SHA
-        
+        # imageToDeploy
        # run: |
       #    az containerapp update \
        #     --name ${{ env.CONTAINERAPP_NAME }} \
