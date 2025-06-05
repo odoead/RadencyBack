@@ -61,7 +61,8 @@ namespace RadencyBack.Controllers
 
             try
             {
-                var booking = await bookingService.CreateBookingAsync(createBookingDto.Name, createBookingDto.Email, createBookingDto.WorkspaceUnitId, StartTimeLOC: createBookingDto.StartTimeLOC, EndTimeLOC: createBookingDto.EndTimeLOC, createBookingDto.TimeZoneId);
+                var booking = await bookingService.CreateBookingAsync(createBookingDto.Name, createBookingDto.Email, createBookingDto.WorkspaceUnitId,
+                    createBookingDto.StartTimeLOC, createBookingDto.EndTimeLOC, createBookingDto.TimeZoneId);
                 return CreatedAtAction(nameof(GetBookingByID), new { id = booking.Id }, booking);
             }
             catch (InvalidOperationException ex)

@@ -1,3 +1,5 @@
+/* header.component.scss */
+
 .header-toolbar {
     position: fixed;
     top: 0;
@@ -5,6 +7,8 @@
     right: 0;
     z-index: 1000;
     box-shadow: var(--shadow);
+    background: var(--primary-color);
+    color: white;
 }
 
 .header-content {
@@ -12,8 +16,15 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    max-width: none;
-    padding: 0 var(--spacing-md);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+
+    @media (max-width: 768px) {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+    }
 }
 
 .logo-section {
@@ -21,12 +32,17 @@
     align-items: center;
     gap: var(--spacing-sm);
     font-size: 1.25rem;
-    color: white;
 
     .logo-icon {
         font-size: 24px;
         width: 24px;
         height: 24px;
+    }
+
+    @media (max-width: 768px) {
+        .logo-text {
+            font-size: 1rem;
+        }
     }
 }
 
@@ -35,15 +51,14 @@
     gap: var(--spacing-sm);
 
     a {
-        color: rgba(255, 255, 255, 0.9);
         display: flex;
         align-items: center;
         gap: var(--spacing-xs);
+        color: rgba(255, 255, 255, 0.9);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--border-radius);
 
-        &:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
+
 
         &.active-link {
             color: white;
@@ -56,6 +71,10 @@
             height: 18px;
         }
     }
+
+    @media (max-width: 768px) {
+        display: none;
+    }
 }
 
 .mobile-nav {
@@ -63,6 +82,10 @@
 
     button {
         color: white;
+    }
+
+    @media (max-width: 768px) {
+        display: block;
     }
 }
 
@@ -85,33 +108,14 @@
         color: rgba(255, 255, 255, 0.9);
         justify-content: flex-start;
         margin-bottom: var(--spacing-sm);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--border-radius);
 
-        &:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
+
 
         &.active-link {
             color: white;
             background-color: rgba(255, 255, 255, 0.2);
         }
-    }
-}
-
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
-    }
-
-    .mobile-nav {
-        display: block;
-    }
-
-    .header-content {
-        padding: 0 var(--spacing-sm);
-    }
-
-    .logo-section .logo-text {
-        font-size: 1rem;
     }
 }

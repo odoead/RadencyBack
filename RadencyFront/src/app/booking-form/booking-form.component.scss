@@ -1,8 +1,16 @@
-.container {
-    padding: var(--spacing-lg);
-}
+ h2 {
+     margin-bottom: var(--spacing-md);
+     color: var(--text-primary);
+ }
 
-.form-row {
-    display: flex;
-    gap: var(--spacing-md);
-}
+ .btn-group.end {
+     @extend .btn-group;
+     justify-content: flex-end;
+     gap: var(--spacing-sm);
+
+     @media (max-width: 768px) {
+         flex-direction: column;
+         align-items: stretch;
+         justify-content: flex-start;
+     }
+ }

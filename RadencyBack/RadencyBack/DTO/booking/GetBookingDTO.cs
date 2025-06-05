@@ -7,7 +7,7 @@ namespace RadencyBack.DTO.booking
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonPropertyName("userId")]
+        [JsonPropertyName("userName")]
         public string UserName { get; set; }
 
         [JsonPropertyName("userEmail")]
@@ -18,7 +18,7 @@ namespace RadencyBack.DTO.booking
 
         [JsonPropertyName("workspaceType")]
         public string WorkspaceType { get; set; }
-        //public string WorkspaceUnitName 
+
         [JsonPropertyName("workspaceCapacity")]
         public int WorkspaceCapacity { get; set; }
 

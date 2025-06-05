@@ -30,12 +30,12 @@
             (unitChange)="form.get('selectedUnit')?.setValue($event)">
         </app-workspace-selection>
         <mat-error *ngIf="form.get('workspaceType')?.hasError('required') && form.get('workspaceType')?.touched"
-            class="custom-form-error">
+            class="error-message">
             Workspace type is required.
         </mat-error>
         <mat-error
             *ngIf="form.get('selectedUnit')?.hasError('required') && form.get('selectedUnit')?.touched && form.get('workspaceType')?.value"
-            class="custom-form-error">
+            class="error-message">
             Please select a desk or room.
         </mat-error>
 

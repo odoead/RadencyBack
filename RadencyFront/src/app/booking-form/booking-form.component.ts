@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of, switchMap, tap } from 'rxjs';
+import { EMPTY, of, switchMap, tap } from 'rxjs';
 import { CoworkingService } from '../Services/coworking.service';
 import { BookingService } from '../Services/booking.service';
 import { UpdateBooking } from '../Entities/UpdateBooking';
@@ -175,7 +175,6 @@ export class BookingFormComponent implements OnInit {
     const { name, email, workspaceType, selectedUnit, dateTimeRange } = this.form.value;
     let payload: CreateBooking | UpdateBooking;
 
-    //todelete
     if (!dateTimeRange || !dateTimeRange.start || !dateTimeRange.end) {
       this.snack.open('Date and time range is invalid.', 'Close', { duration: 3000 });
       return;
@@ -185,24 +184,6 @@ export class BookingFormComponent implements OnInit {
       return;
     }
 
-    /*
-    if (this.mode === 'new') {
-      payload = {
-        workspaceUnitId: selectedUnit,
-        startTimeLOC: dateTimeRange.start.toLocaleString(),
-        endTimeLOC: dateTimeRange.end.toLocaleString(),
-        name: name,
-        email: email,
-        timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone
-      };
-    } else {
-      payload = {
-        workspaceUnitId: selectedUnit,
-        startTimeLOC: dateTimeRange.start.toLocaleString(),
-        endTimeLOC: dateTimeRange.end.toLocaleString(),
-        timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone
-      };
-    }*/
 
     let call$;
     if (this.mode === 'new') {
@@ -239,8 +220,6 @@ export class BookingFormComponent implements OnInit {
     });
   }
 
-
-  //test dodo delete todelete
   formatDateWithoutTimezone(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');

@@ -29,7 +29,7 @@
         </h4>
 
         <div class="units-grid">
-            <mat-card *ngFor="let unit of filteredUnits" class="unit-card" [class.selected]="isUnitSelected(unit.id)"
+            <mat-card *ngFor="let unit of filteredUnits" class="unit-card card" [class.selected]="isUnitSelected(unit.id)"
                 [class.unavailable]="!unit.isAvailable" (click)="selectUnit(unit)"
                 [attr.aria-pressed]="isUnitSelected(unit.id)" tabindex="0"> <mat-card-content class="unit-content">
                     <mat-checkbox class="unit-checkbox" [checked]="isUnitSelected(unit.id)"

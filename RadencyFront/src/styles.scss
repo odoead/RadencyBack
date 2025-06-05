@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@use '@angular/material' as mat;
+@use '@angular/material'as mat;
 @include mat.core();
 
 
@@ -15,11 +15,14 @@ body {
     --success-color: #4caf50;
     --background-color: #fafafa;
     --surface-color: #ffffff;
+
     --text-primary: rgba(0, 0, 0, 0.87);
     --text-secondary: rgba(0, 0, 0, 0.6);
+
     --border-color: rgba(0, 0, 0, 0.12);
     --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     --border-radius: 8px;
+
     --spacing-xs: 4px;
     --spacing-sm: 8px;
     --spacing-md: 16px;
@@ -44,8 +47,15 @@ body {
 
 .container {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-md);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+
+    @media (max-width: 768px) {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+    }
 }
 
 .page-header {
@@ -54,25 +64,27 @@ body {
     h1 {
         font-size: 2rem;
         color: var(--text-primary);
+
+        @media (max-width: 768px) {
+            font-size: 1.5rem;
+        }
     }
 
     p {
-        color: var(--text-secondary);
         margin-top: var(--spacing-sm);
+        color: var(--text-secondary);
     }
 }
 
+ 
 .card {
     background: var(--surface-color);
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow-light);
+    box-shadow: var(--shadow);
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-md);
 
-    &:hover {
-        box-shadow: var(--shadow);
-        transition: box-shadow 0.2s ease;
-    }
+
 }
 
 .btn-group {
@@ -87,6 +99,20 @@ body {
     &.end {
         justify-content: flex-end;
     }
+
+    &.full-width button,
+    &.full-width .mat-button {
+        flex-grow: 1;
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+        }
+    }
 }
 
 .form-row {
@@ -97,6 +123,17 @@ body {
     .form-field {
         flex: 1;
     }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+}
+
+mat-icon {
+    vertical-align: middle;
+    font-size: 24px;
+    color: var(--text-secondary);
 }
 
 .error-message {
@@ -125,26 +162,12 @@ body {
     }
 }
 
-/*mobile*/
-@media (max-width: 768px) {
-    .container {
-        padding: 0 var(--spacing-sm);
-    }
+mat-card {
+    border-radius: var(--border-radius);
+}
 
-    .form-row {
-        flex-direction: column;
-        gap: var(--spacing-sm);
-    }
-
-    .btn-group {
-        flex-direction: column;
-
-        button {
-            width: 100%;
-        }
-    }
-
-    .page-header h1 {
-        font-size: 1.5rem;
+mat-form-field {
+    .mat-form-field-outline {
+        stroke: var(--border-color);
     }
 }

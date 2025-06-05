@@ -1,5 +1,18 @@
 .container {
-    margin: var(--spacing-lg) auto;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+mat-grid-list {
+    margin-bottom: var(--spacing-lg);
+
+    /* Ensure images fill tile and maintain object‐fit */
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: var(--border-radius);
+    }
 }
 
 .amenities,
@@ -11,4 +24,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--spacing-md);
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        /* stack cards on mobile */
+        gap: var(--spacing-sm);
+    }
 }

@@ -24,21 +24,32 @@ namespace RadencyBack.Services
                 .Include(c => c.Photos).FirstOrDefaultAsync(c => c.Id == coworkingId) ??
                 throw new NotFoundException($"Coworking with id {coworkingId} not found.");
 
-            if (coworking == null) return null;
+            var utcNow = DateTime.UtcNow;
 
-            var UTCnow = DateTime.UtcNow;
-            var workspaceTypes = coworking.Workspaces.GroupBy(w => w.GetType().Name.ToLower())
-                .Select(g => new WorkspacesByTypeDTO
+            var workspaceTypes = new List<WorkspacesByTypeDTO>();
+            var groupedWorkspaces = coworking.Workspaces.GroupBy(w => w.GetType().Name.ToLower());
+
+            foreach (var group in groupedWorkspaces)
+            {
+                var units = new List<BookableWorkspaceUnitDTO>();
+                foreach (var g in group)
                 {
-                    Type = g.Key,
-                    Units = g.Select(w => new BookableWorkspaceUnitDTO
+                    var isAvailable = await CheckAvailabilityUTCAsync(g.Id, utcNow, utcNow);
+                    units.Add(new BookableWorkspaceUnitDTO
                     {
-                        Id = w.Id,
-                        Capacity = GetWorkspaceCapacity(w),
-                        IsAvailable = !w.Bookings.Any(b => b.StartTimeUTC <= UTCnow && b.EndTimeUTC > UTCnow),
-                        HasCurrentBooking = w.Bookings.Any(b => b.StartTimeUTC <= UTCnow && b.EndTimeUTC > UTCnow),
-                    }).ToList(),
-                }).ToList();
+                        Id = g.Id,
+                        Capacity = GetWorkspaceCapacity(g),
+                        IsAvailable = isAvailable,
+                        HasCurrentBooking = g.Bookings.Any(b => b.StartTimeUTC <= utcNow && b.EndTimeUTC > utcNow),
+                    });
+                }
+                workspaceTypes.Add(new WorkspacesByTypeDTO
+                {
+                    Type = group.Key,
+                    Units = units
+                });
+            }
+
 
             return new GetCoworkingDetailsDTO
             {
@@ -59,16 +70,19 @@ namespace RadencyBack.Services
 
 
 
-        public async Task<bool> CheckAvailabilityUTCAsync(int workspaceUnitId, DateTime startTimeUTC, DateTime endTimeUTC, int? excludeBookingId)
+        public async Task<bool> CheckAvailabilityUTCAsync(int workspaceUnitId, DateTime startTimeUTC, DateTime endTimeUTC, int? excludeBookingId = null)
         {
-            return !await dbcontext.Bookings
-                .Where(b => b.WorkspaceUnitId == workspaceUnitId && b.StartTimeUTC < endTimeUTC && b.EndTimeUTC > startTimeUTC)
-                .Where(b => (excludeBookingId == null || b.Id != excludeBookingId))
-                .AnyAsync();
+            var workspace = await dbcontext.WorkspaceUnits
+                .FirstOrDefaultAsync(w => w.Id == workspaceUnitId) ?? throw new BadRequestException("Workspace doesn't exist");
 
+            int maxCapacity = GetWorkspaceCapacity(workspace);
+
+            int overlappingBookings = await GetOverlappingBookingsCountAsync(workspaceUnitId, startTimeUTC, endTimeUTC, excludeBookingId);
+
+            return overlappingBookings < maxCapacity;
         }
 
-        public async Task<bool> CheckAvailabilityLOCAsync(int workspaceUnitId, DateTime startTimeLOC, DateTime endTimeLOC, int? excludeBookingId)
+        public async Task<bool> CheckAvailabilityLOCAsync(int workspaceUnitId, DateTime startTimeLOC, DateTime endTimeLOC, int? excludeBookingId = null)
         {
             var timeZoneId = await dbcontext.Bookings
                 .Where(b => b.WorkspaceUnitId == workspaceUnitId)
@@ -79,6 +93,14 @@ namespace RadencyBack.Services
             var endTimeUTC = TimezoneConverter.GetUtcFromLocal(endTimeLOC, timeZoneId);
 
             return await CheckAvailabilityUTCAsync(workspaceUnitId, startTimeUTC, endTimeUTC, excludeBookingId);
+        }
+
+        private async Task<int> GetOverlappingBookingsCountAsync(int workspaceUnitId, DateTime startTimeUTC, DateTime endTimeUTC, int? excludeBookingId = null)
+        {
+            return await dbcontext.Bookings
+                .Where(b => b.WorkspaceUnitId == workspaceUnitId && b.StartTimeUTC < endTimeUTC && b.EndTimeUTC > startTimeUTC
+                    && (excludeBookingId == null || b.Id != excludeBookingId))
+                .CountAsync();
         }
 
 
@@ -113,7 +135,6 @@ namespace RadencyBack.Services
                 return new GetUnavailableWorkspaceUnitLOCRangesDTO
                 {
                     WorkspaceUnitId = workspaceUnitId,
-
                     UnavailableRanges = new List<DateTimeRangeDTO>(),
                 };
             }

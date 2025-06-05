@@ -1,5 +1,5 @@
 export const environment = {
-    production: false,
+    production: true,
     coworkingUrl: 'http://localhost:5247',
 
 

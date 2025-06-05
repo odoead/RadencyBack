@@ -1,0 +1,130 @@
+/* workspace-selection.component.scss */
+
+.workspace-selection {
+    margin-bottom: var(--spacing-lg);
+}
+
+.workspace-type-select {
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+}
+
+.workspace-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    mat-icon {
+        color: var(--text-primary);
+    }
+
+    .availability-chip {
+        margin-left: auto;
+    }
+}
+
+.no-types-available,
+.no-units-available-message {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--text-secondary);
+
+    mat-icon {
+        font-size: 20px;
+    }
+
+    margin-top: var(--spacing-md);
+}
+
+.units-header {
+    margin-bottom: var(--spacing-sm);
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.units-grid {
+
+    gap: var(--spacing-sm);
+
+    @media (max-width: var(--breakpoint-sm)) {
+        gap: var(--spacing-xs);
+    }
+
+    .unit-card {
+        cursor: pointer;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-light);
+        position: relative;
+
+        &.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        &.unavailable {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+
+
+
+
+        .unit-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+        }
+
+        .unit-checkbox {
+            margin-right: var(--spacing-xs);
+        }
+
+        .unit-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+
+            .unit-id {
+                font-size: 0.9rem;
+                color: var(--text-primary);
+            }
+
+            .unit-capacity {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-xs);
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+
+                mat-icon {
+                    font-size: 16px;
+                }
+            }
+
+            .unit-status {
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+
+                &.available {
+                    color: var(--success-color);
+                }
+
+                &.occupied {
+                    color: var(--warn-color);
+                }
+            }
+        }
+    }
+}
+
+.selection-summary {
+    margin-top: var(--spacing-md);
+
+    mat-chip-set {
+        mat-chip {
+            font-size: 0.9rem;
+        }
+    }
+}

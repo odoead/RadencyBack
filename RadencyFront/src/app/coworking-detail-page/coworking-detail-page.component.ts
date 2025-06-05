@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
+import { catchError, Observable, of, switchMap } from 'rxjs';
 import { CoworkingDetails } from '../Entities/CoworkingDetails';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CoworkingService } from '../Services/coworking.service';
@@ -19,7 +19,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 })
 export class CoworkingDetailPageComponent implements OnInit {
 
-  coworking$!: Observable<CoworkingDetails>;
+  coworking$!: Observable<CoworkingDetails | null>;
 
   constructor(
     private route: ActivatedRoute,
@@ -31,8 +31,11 @@ export class CoworkingDetailPageComponent implements OnInit {
     this.coworking$ = this.route.params.pipe(
       switchMap(params => {
         const id = +params['id'];
-        if (!id) return of(null as any);
-        return this.coworkingService.getCoworkingDetailsById(id,true);
+        if (!id) {
+          this.router.navigate(['/errors/404']);
+          return of(null);
+        }
+        return this.coworkingService.getCoworkingDetailsById(id, true);
       })
     );
   }

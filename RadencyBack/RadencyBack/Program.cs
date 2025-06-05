@@ -12,6 +12,16 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = true;
+    options.SingleLine = true;
+    options.TimestampFormat = "HH:mm:ss ";
+});
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -33,8 +43,7 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Radency Coworking API",
         Version = "v1",
     });
-    //var basePath = AppContext.BaseDirectory;
-    //var xmlPath = Path.Combine(basePath, "Coworking.xml");
+
     var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
@@ -97,8 +106,10 @@ app.MapControllers();
 // Seed data
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<Context>();
-    await Seeder.SeedDataAsync(context);
+    var dbContext = scope.ServiceProvider.GetRequiredService<Context>();
+    await dbContext.Database.MigrateAsync();
+
+    await Seeder.SeedDataAsync(dbContext);
 }
 
 app.Run();

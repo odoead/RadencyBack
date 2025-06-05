@@ -11,8 +11,8 @@ export const routes: Routes = [
   { path: 'booking/edit/:id', component: BookingFormComponent },
   { path: 'my-bookings', component: MyBookingsPageComponent },
   { path: 'not-found', component: NotFoundComponent },
-  { path: 'errors/:code', component: NotFoundComponent },
+  { path: 'error/:code', component: NotFoundComponent },
 
   
-  { path: 'errors', redirectTo: '/errors/404' },
-  { path: '**', redirectTo: '/errors/404' }];
+  { path: 'error', redirectTo: '/error/404' },
+  { path: '**', redirectTo: '/error/404' }];

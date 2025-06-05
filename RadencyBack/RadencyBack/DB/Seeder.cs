@@ -10,144 +10,150 @@ namespace RadencyBack.DB
         {
             await dbcontext.Database.EnsureCreatedAsync();
 
-            // Seed Coworkings
+            // --- Seed Coworkings ---
             if (!await dbcontext.Coworkings.AnyAsync())
             {
-                dbcontext.Coworkings.AddRange(
-                    new Coworking { Id = 1, Name = "Central Hub", Address = "100 Main St" },
-                    new Coworking { Id = 2, Name = "Tech Space", Address = "200 Tech Ave" }
-                );
+                var coworking1 = new Coworking { Name = "Central Hub", Address = "100 Main St" };
+                var coworking2 = new Coworking { Name = "Tech Space", Address = "200 Tech Ave" };
+                dbcontext.Coworkings.AddRange(coworking1, coworking2);
+                await dbcontext.SaveChangesAsync();
             }
 
-            // Seed Amenities
+            // --- Seed Amenities ---
             if (!await dbcontext.Amenities.AnyAsync())
             {
-                dbcontext.Amenities.AddRange(
-                    new Amenity { Id = 1, Name = "WiFi", Icon = "wifi" },
-                    new Amenity { Id = 2, Name = "Coffee", Icon = "coffee" },
-                    new Amenity { Id = 3, Name = "Printer", Icon = "printer" }
-                );
+                var amenity1 = new Amenity { Name = "WiFi", Icon = "wifi" };
+                var amenity2 = new Amenity { Name = "Coffee", Icon = "coffee" };
+                var amenity3 = new Amenity { Name = "Printer", Icon = "printer" };
+                dbcontext.Amenities.AddRange(amenity1, amenity2, amenity3);
+                await dbcontext.SaveChangesAsync();
             }
 
-            // Seed Photos
+            // --- Seed Photos ---
             if (!await dbcontext.Photos.AnyAsync())
             {
-                dbcontext.Photos.AddRange(
-                    new Photo { Id = 1, Url = "https://example.com/photo1.jpg", CoworkingId = 1 },
-                    new Photo { Id = 2, Url = "https://example.com/photo2.jpg", CoworkingId = 2 }
-                );
+                var centralHub = await dbcontext.Coworkings.FirstOrDefaultAsync(c => c.Name == "Central Hub");
+                var techSpace = await dbcontext.Coworkings.FirstOrDefaultAsync(c => c.Name == "Tech Space");
+
+                if (centralHub != null)
+                {
+                    dbcontext.Photos.Add(new Photo { Url = "https://fastly.picsum.photos/id/2/5000/3333.jpg?hmac=_KDkqQVttXw_nM-RyJfLImIbafFrqLsuGO5YuHqD-qQ", CoworkingId = centralHub.Id });
+                }
+                if (techSpace != null)
+                {
+                    dbcontext.Photos.Add(new Photo { Url = "https://fastly.picsum.photos/id/2/5000/3333.jpg?hmac=_KDkqQVttXw_nM-RyJfLImIbafFrqLsuGO5YuHqD-qQ", CoworkingId = techSpace.Id });
+                }
             }
 
-            // Seed OpenWorkspaceUnits
-            if (!await dbcontext.OpenWorkspaceUnits.AnyAsync())
+            // --- Seed Workspace Units ---
+            var coworkingForUnits1 = await dbcontext.Coworkings.FirstOrDefaultAsync(c => c.Name == "Central Hub");
+            var coworkingForUnits2 = await dbcontext.Coworkings.FirstOrDefaultAsync(c => c.Name == "Tech Space");
+
+            if (coworkingForUnits1 != null)
             {
-                dbcontext.OpenWorkspaceUnits.AddRange(
-                    new OpenWorkspaceUnit { Id = 1, CoworkingId = 1, MaxCapacity = 60 }
-                );
+                if (!await dbcontext.OpenWorkspaceUnits.AnyAsync())
+                {
+                    dbcontext.OpenWorkspaceUnits.Add(new OpenWorkspaceUnit { CoworkingId = coworkingForUnits1.Id, MaxCapacity = 60 });
+                }
+                if (!await dbcontext.PrivateWorkspaceUnits.AnyAsync(pwu => pwu.CoworkingId == coworkingForUnits1.Id))
+                {
+                    dbcontext.PrivateWorkspaceUnits.Add(new PrivateWorkspaceUnit { CoworkingId = coworkingForUnits1.Id, MaxCapacity = 2 });
+                }
+                if (!await dbcontext.MeetingWorkspaceUnits.AnyAsync(mwu => mwu.CoworkingId == coworkingForUnits1.Id))
+                {
+                    dbcontext.MeetingWorkspaceUnits.Add(new MeetingWorkspaceUnit { CoworkingId = coworkingForUnits1.Id, MaxCapacity = 10 });
+                }
             }
-
-            // Seed PrivateWorkspaceUnits
-            if (!await dbcontext.PrivateWorkspaceUnits.AnyAsync())
+            if (coworkingForUnits2 != null)
             {
-                dbcontext.PrivateWorkspaceUnits.AddRange(
-                    new PrivateWorkspaceUnit { Id = 2, CoworkingId = 1, MaxCapacity = 2 },
-                    new PrivateWorkspaceUnit { Id = 3, CoworkingId = 2, MaxCapacity = 5 }
-                );
+                if (!await dbcontext.PrivateWorkspaceUnits.AnyAsync(pwu => pwu.CoworkingId == coworkingForUnits2.Id))
+                {
+                    dbcontext.PrivateWorkspaceUnits.Add(new PrivateWorkspaceUnit { CoworkingId = coworkingForUnits2.Id, MaxCapacity = 5 });
+                }
+                if (!await dbcontext.MeetingWorkspaceUnits.AnyAsync(mwu => mwu.CoworkingId == coworkingForUnits2.Id))
+                {
+                    dbcontext.MeetingWorkspaceUnits.Add(new MeetingWorkspaceUnit { CoworkingId = coworkingForUnits2.Id, MaxCapacity = 10 });
+                }
             }
 
-            // Seed MeetingWorkspaceUnits
-            if (!await dbcontext.MeetingWorkspaceUnits.AnyAsync())
+            // --- Seed UserBookingInfos ---
+            UserBookingInfo alice = await dbcontext.UserBookingInfos.FirstOrDefaultAsync(u => u.Email == "alice@example.com");
+            UserBookingInfo bob = await dbcontext.UserBookingInfos.FirstOrDefaultAsync(u => u.Email == "bob@example.com");
+
+            if (alice == null)
             {
-                dbcontext.MeetingWorkspaceUnits.AddRange(
-                    new MeetingWorkspaceUnit { Id = 4, CoworkingId = 2, MaxCapacity = 10 },
-                    new MeetingWorkspaceUnit { Id = 5, CoworkingId = 1, MaxCapacity = 10 }
-                );
+                alice = new UserBookingInfo { Email = "alice@example.com", Name = "Alice" };
+                dbcontext.UserBookingInfos.Add(alice);
             }
-
-            // Seed UserBookingInfos
-            if (!await dbcontext.UserBookingInfos.AnyAsync())
+            if (bob == null)
             {
-                dbcontext.UserBookingInfos.AddRange(
-                    new UserBookingInfo { Id = 1, Email = "alice@example.com", Name = "Alice" },
-                    new UserBookingInfo { Id = 2, Email = "bob@example.com", Name = "Bob" }
-                );
+                bob = new UserBookingInfo { Email = "bob@example.com", Name = "Bob" };
+                dbcontext.UserBookingInfos.Add(bob);
             }
 
-            // Seed Bookings
-            // Seed Bookings
+            if (dbcontext.ChangeTracker.HasChanges())
+            {
+                await dbcontext.SaveChangesAsync();
+                // Reload alice and bob to ensure their IDs are set.
+                if (await dbcontext.UserBookingInfos.FirstOrDefaultAsync(u => u.Email == "alice@example.com") != null && alice.Id == 0)
+                    alice = await dbcontext.UserBookingInfos.FirstOrDefaultAsync(u => u.Email == "alice@example.com");
+                if (await dbcontext.UserBookingInfos.FirstOrDefaultAsync(u => u.Email == "bob@example.com") != null && bob.Id == 0)
+                    bob = await dbcontext.UserBookingInfos.FirstOrDefaultAsync(u => u.Email == "bob@example.com");
+            }
+
+            // --- Seed Bookings ---
             if (!await dbcontext.Bookings.AnyAsync())
             {
-                dbcontext.Bookings.AddRange(
-                    new Booking
-                    {
-                        Id = 1,
-                        WorkspaceUnitId = 1,
-                        StartTimeUTC = new DateTime(2025, 6, 1, 9, 0, 0, DateTimeKind.Utc),
-                        EndTimeUTC = new DateTime(2025, 6, 1, 17, 0, 0, DateTimeKind.Utc),
-                        TimeZoneId = "Europe/Berlin",
-                        UserInfoId = 1,
-                    },
-                    new Booking
-                    {
-                        Id = 2,
-                        WorkspaceUnitId = 2,
-                        StartTimeUTC = new DateTime(2025, 6, 2, 10, 0, 0, DateTimeKind.Utc),
-                        EndTimeUTC = new DateTime(2025, 6, 2, 12, 0, 0, DateTimeKind.Utc),
-                        TimeZoneId = "Europe/Berlin",
-                        UserInfoId = 2
-                    },
-                    new Booking
-                    {
-                        Id = 3,
-                        WorkspaceUnitId = 2,
-                        StartTimeUTC = new DateTime(2025, 7, 2, 10, 0, 0, DateTimeKind.Utc),
-                        EndTimeUTC = new DateTime(2025, 7, 2, 12, 0, 0, DateTimeKind.Utc),
-                        TimeZoneId = "Europe/London",
-                        UserInfoId = 2
-                    },
-                    new Booking
-                    {
-                        Id = 4,
-                        WorkspaceUnitId = 2,
-                        StartTimeUTC = new DateTime(2025, 7, 4, 10, 0, 0, DateTimeKind.Utc),
-                        EndTimeUTC = new DateTime(2025, 7, 4, 12, 0, 0, DateTimeKind.Utc),
-                        TimeZoneId = "Europe/London",
-                        UserInfoId = 2
-                    },
+                // Ensure alice and bob exist and have IDs.
+                if (alice != null && alice.Id != 0 && bob != null && bob.Id != 0)
+                {
+                    var workspaceUnit1 = await dbcontext.WorkspaceUnits.FindAsync(1);
+                    var workspaceUnit2 = await dbcontext.WorkspaceUnits.FindAsync(2);
 
-                     new Booking
-                     {
-                         Id = 5,
-                         WorkspaceUnitId = 2,
-                         StartTimeUTC = DateTime.Parse("2025-07-15T10:00:00.000").ToUniversalTime(),
-                         EndTimeUTC = DateTime.Parse("2025-07-15T12:00:00.000").ToUniversalTime(),
-                         TimeZoneId = "Europe/London",
-                         UserInfoId = 2
-                     },
-                    new Booking
+                    if (workspaceUnit1 != null && workspaceUnit2 != null)
                     {
-                        Id = 6,
-                        WorkspaceUnitId = 2,
-                        StartTimeUTC = DateTime.Parse("2025-07-18T10:00:00.000").ToUniversalTime(),
-                        EndTimeUTC = DateTime.Parse("2025-07-18T12:00:00.000").ToUniversalTime(),
-                        TimeZoneId = "Europe/London",
-                        UserInfoId = 2
+                        dbcontext.Bookings.AddRange(
+                            new Booking { WorkspaceUnitId = workspaceUnit1.Id, StartTimeUTC = new DateTime(2025, 6, 1, 9, 0, 0, DateTimeKind.Utc), EndTimeUTC = new DateTime(2025, 6, 1, 17, 0, 0, DateTimeKind.Utc), TimeZoneId = "Europe/Berlin", UserInfo = alice },
+                            new Booking { WorkspaceUnitId = workspaceUnit2.Id, StartTimeUTC = new DateTime(2025, 6, 2, 10, 0, 0, DateTimeKind.Utc), EndTimeUTC = new DateTime(2025, 6, 2, 12, 0, 0, DateTimeKind.Utc), TimeZoneId = "Europe/Berlin", UserInfo = bob }
+                        );
                     }
-                );
+                    else
+                    {
+                        Console.WriteLine("Warning: WorkspaceUnit with ID 1 or 2 not found. Bookings not added.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Warning: UserBookingInfo 'alice' or 'bob' not found or not created. Bookings not added.");
+                }
             }
 
-            // Seed WorkspaceAmenities
+            // --- Seed WorkspaceAmenities ---
             if (!await dbcontext.WorkspaceAmenities.AnyAsync())
             {
-                dbcontext.WorkspaceAmenities.AddRange(
-                    new WorkspaceAmenity { CoworkingId = 1, AmenityId = 1 },
-                    new WorkspaceAmenity { CoworkingId = 1, AmenityId = 2 },
-                    new WorkspaceAmenity { CoworkingId = 2, AmenityId = 1 },
-                    new WorkspaceAmenity { CoworkingId = 2, AmenityId = 3 }
-                );
+                var centralHub = await dbcontext.Coworkings.FirstOrDefaultAsync(c => c.Name == "Central Hub");
+                var techSpace = await dbcontext.Coworkings.FirstOrDefaultAsync(c => c.Name == "Tech Space");
+                var wifi = await dbcontext.Amenities.FirstOrDefaultAsync(a => a.Name == "WiFi");
+                var coffee = await dbcontext.Amenities.FirstOrDefaultAsync(a => a.Name == "Coffee");
+                var printer = await dbcontext.Amenities.FirstOrDefaultAsync(a => a.Name == "Printer");
+
+                if (centralHub != null && wifi != null)
+                    dbcontext.WorkspaceAmenities.Add(new WorkspaceAmenity { CoworkingId = centralHub.Id, AmenityId = wifi.Id });
+                if (centralHub != null && coffee != null)
+                    dbcontext.WorkspaceAmenities.Add(new WorkspaceAmenity { CoworkingId = centralHub.Id, AmenityId = coffee.Id });
+                if (techSpace != null && wifi != null)
+                    dbcontext.WorkspaceAmenities.Add(new WorkspaceAmenity { CoworkingId = techSpace.Id, AmenityId = wifi.Id });
+                if (techSpace != null && printer != null)
+                    dbcontext.WorkspaceAmenities.Add(new WorkspaceAmenity { CoworkingId = techSpace.Id, AmenityId = printer.Id });
             }
 
-            await dbcontext.SaveChangesAsync();
+            // Final save for any remaining changes.
+            if (dbcontext.ChangeTracker.HasChanges())
+            {
+                await dbcontext.SaveChangesAsync();
+            }
         }
+
     }
 }
+

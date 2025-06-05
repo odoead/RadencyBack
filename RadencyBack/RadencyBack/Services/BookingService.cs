@@ -79,7 +79,6 @@ namespace RadencyBack.Services
                     Email = Email,
                 };
                 dbcontext.UserBookingInfos.Add(userInfo);
-                await dbcontext.SaveChangesAsync();
             }
 
             var booking = new Booking
@@ -87,19 +86,20 @@ namespace RadencyBack.Services
                 WorkspaceUnitId = WorkspaceUnitId,
                 StartTimeUTC = StartTimeUTC,
                 EndTimeUTC = EndTimeUTC,
-                UserInfoId = userInfo.Id,
+                UserInfo = userInfo,
                 TimeZoneId = TimeZoneId,
             };
-
             dbcontext.Bookings.Add(booking);
+
             await dbcontext.SaveChangesAsync();
             return await GetBookingByIdAsync(booking.Id);
         }
 
         public async Task<GetBookingDTO?> UpdateBookingAsync(int id, int WorkspaceUnitId, DateTime StartTimeLOC, DateTime EndTimeLOC, string TimeZoneId)
         {
-            var booking = await dbcontext.Bookings.FindAsync(id) ??
+            var booking = await dbcontext.Bookings.FirstOrDefaultAsync(q => q.Id == id) ??
                 throw new NotFoundException($"Booking with id {id} not found.");
+
 
 
 

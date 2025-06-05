@@ -89,21 +89,6 @@ export class WorkspaceSelectionComponent implements OnInit, OnChanges {
   }
 
 
-
-  /*toggleUnit(unit: BookableWorkspaceUnit): void {
-    if (!unit.isAvailable) return;
-
-    const newSelection = [...this.selectedUnits];
-    const index = newSelection.indexOf(unit.id);
-
-    if (index > -1) {
-      newSelection.splice(index, 1);
-    } else {
-      newSelection.push(unit.id);
-    }
-    this.unitChange.emit(newSelection);
-  }*/
-
   onCheckboxChange(unit: BookableWorkspaceUnit, event: any): void {
     event.stopPropagation();
     this.selectUnit(unit);

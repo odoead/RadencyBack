@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpRequest, HttpHandlerFn } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { NavigationExtras, Router } from "@angular/router";
-import { catchError, Observable, throwError } from "rxjs";
+import { catchError, EMPTY, Observable, throwError } from "rxjs";
 
 export const errorHandlingInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   const router = inject(Router);
@@ -22,19 +22,24 @@ export const errorHandlingInterceptor = (req: HttpRequest<unknown>, next: HttpHa
               () => new Error(JSON.stringify(error.error.errors))
             );
           } else {
-            alert(error.error.message);
+            if (!isPageLoad) {
+              alert(error.error.message);
+            }
           }
         }
 
         if (error.status === 401) {
-          alert(error.error.message);
+          if (!isPageLoad) {
+            alert(error.error.message);
+          }
         }
 
         if (error.status === 404) {
           if (isPageLoad) {
-            router.navigateByUrl('/error/404');
-          }
-          else {
+            // Navigate to error page and return EMPTY to stop the observable chain
+            router.navigate(['/errors/404']);
+            return EMPTY;
+          } else {
             console.error(error.error.message);
             alert(error.error.message);
           }
@@ -42,8 +47,11 @@ export const errorHandlingInterceptor = (req: HttpRequest<unknown>, next: HttpHa
 
         if (error.status === 500) {
           if (isPageLoad) {
-            const navigationExtras: NavigationExtras = { state: { error: error.error.message }, };
-            router.navigateByUrl('/error/500', navigationExtras);
+            const navigationExtras: NavigationExtras = {
+              state: { error: error.error.message }
+            };
+            router.navigate(['/errors/500'], navigationExtras);
+            return EMPTY;
           } else {
             alert(error.error.message);
           }
