@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { WorkspacesByType } from '../Entities/WorkspacesByType';
-import { WorkspacesTypes } from '../Entities/WorkspacesTypes';
+import { WorkspacesByType } from '../Shared/Entities/WorkspacesByType';
+import { WorkspacesTypes } from '../Shared/Entities/WorkspacesTypes';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';

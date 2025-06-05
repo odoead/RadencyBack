@@ -2,22 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, of, switchMap, tap } from 'rxjs';
-import { CoworkingService } from '../Services/coworking.service';
-import { BookingService } from '../Services/booking.service';
-import { UpdateBooking } from '../Entities/UpdateBooking';
-import { CreateBooking } from '../Entities/CreateBooking';
-import { WorkspacesByType } from '../Entities/WorkspacesByType';
-import { WorkspacesTypes } from '../Entities/WorkspacesTypes';
+import { UpdateBooking } from '../Shared/Entities/UpdateBooking';
+import { CreateBooking } from '../Shared/Entities/CreateBooking';
+import { WorkspacesByType } from '../Shared/Entities/WorkspacesByType';
+import { WorkspacesTypes } from '../Shared/Entities/WorkspacesTypes';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkspaceSelectionComponent } from "../workspace-selection/workspace-selection.component";
 import { CalendarComponent } from "../calendar/calendar.component";
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
-import { Booking } from '../Entities/Booking';
-import { DateTimeRange } from '../Entities/DateTimeRange';
+import { Booking } from '../Shared/Entities/Booking';
+import { DateTimeRange } from '../Shared/Entities/DateTimeRange';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { BookingService } from '../Shared/Services/booking.service';
+import { CoworkingService } from '../Shared/Services/coworking.service';
 
 @Component({
   selector: 'app-booking-form',

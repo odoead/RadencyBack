@@ -5,7 +5,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { WorkspacesTypes } from '../Entities/WorkspacesTypes';
+import { WorkspacesTypes } from '../Shared/Entities/WorkspacesTypes';
 import {
   AbstractControl,
   FormControl,
@@ -14,7 +14,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DateTimeRange } from '../Entities/DateTimeRange';
+import { DateTimeRange } from '../Shared/Entities/DateTimeRange';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';

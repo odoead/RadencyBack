@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { catchError, Observable, of, switchMap } from 'rxjs';
-import { CoworkingDetails } from '../Entities/CoworkingDetails';
+import { CoworkingDetails } from '../Shared/Entities/CoworkingDetails';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CoworkingService } from '../Services/coworking.service';
-import { WorkspacesByType } from '../Entities/WorkspacesByType';
+import { WorkspacesByType } from '../Shared/Entities/WorkspacesByType';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { AmenitiesListComponent } from "../amenities-list/amenities-list.component";
 import { WorkspaceCardComponent } from "../workspace-card/workspace-card.component";
 import { MatGridListModule } from '@angular/material/grid-list';
+import { CoworkingService } from '../Shared/Services/coworking.service';
 
 @Component({
   selector: 'app-coworking-detail-page',

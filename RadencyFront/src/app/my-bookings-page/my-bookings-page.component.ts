@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Booking } from '../Entities/Booking';
-import { BookingService } from '../Services/booking.service';
+import { Booking } from '../Shared/Entities/Booking';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '../Shared/SharedComponents/ConfirmDialog/confirm-dialog/confirm-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { BookingCardComponent } from "../booking-card/booking-card.component";
+import { BookingService } from '../Shared/Services/booking.service';
 
 @Component({
   selector: 'app-my-bookings-page',

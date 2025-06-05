@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Booking } from '../Entities/Booking';
+import { Booking } from '../Shared/Entities/Booking';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 

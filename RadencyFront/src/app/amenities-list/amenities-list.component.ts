@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { Amenity } from '../Entities/Amenity';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { Amenity } from '../Shared/Entities/Amenity';
 
 @Component({
   selector: 'app-amenities-list',

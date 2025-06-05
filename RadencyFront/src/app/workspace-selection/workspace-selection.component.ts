@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { WorkspacesByType } from '../Entities/WorkspacesByType';
-import { WorkspacesTypes } from '../Entities/WorkspacesTypes';
+import { WorkspacesByType } from '../Shared/Entities/WorkspacesByType';
+import { WorkspacesTypes } from '../Shared/Entities/WorkspacesTypes';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { BookableWorkspaceUnit } from '../Entities/BookableWorkspaceUnit';
+import { BookableWorkspaceUnit } from '../Shared/Entities/BookableWorkspaceUnit';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPseudoCheckboxModule } from '@angular/material/core';

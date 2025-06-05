@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { CoworkingDetails, } from '../Entities/CoworkingDetails';
 import { catchError, Observable, throwError } from 'rxjs';
 import { AvailabilityCheck } from '../Entities/AvailabilityCheck';
-import { environment } from '../../environments/environment';
 import { HeadersService } from './headers.service';
 import { UnavailableWorkspaceUnitLOCRanges, } from '../Entities/UnavailableWorkspaceUnitLOCRanges';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
