@@ -65,4 +65,4 @@ jobs:
             --name ${{ env.CONTAINERAPP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --image ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }} \
-            --environment-variables ASPNETCORE_ENVIRONMENT=Production DefaultConnection="${{ secrets.DATABASE_CONNECTION_STRING }}"
+            --environment-variables ASPNETCORE_ENVIRONMENT=Production
