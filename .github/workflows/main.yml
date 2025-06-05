@@ -8,14 +8,18 @@ on:
 
 env:
   # your Azure resources
+  #backend
   ACR_NAME: acrcoworkingprod
   ACR_LOGIN_SERVER: acrcoworkingprod.azurecr.io
   RESOURCE_GROUP: rg-coworking-prod
   CONTAINERAPP_NAME: app-coworking-api
+  
+  #frontend
+  STATIC_WEB_APP_NAME: app-coworking-front
 
 jobs:
-  ## ─── 1) build & push ──────────────────────────────────────────────────────────
-  build:
+  ## ─── 1) build & push backend──────────────────────────────────────────────────────────
+  build-backend:
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.set-output.outputs.image }}
@@ -49,9 +53,9 @@ jobs:
           ACR_LOGIN_SERVER: ${{ env.ACR_LOGIN_SERVER }}
           GITHUB_SHA: ${{ github.sha }}
 
-  ## ─── 2) deploy ────────────────────────────────────────────────────────────────
-  deploy:
-    needs: build
+  ## ─── 2) deploy backend ────────────────────────────────────────────────────────────────
+  deploy-backend:
+    needs: build-backend
     runs-on: ubuntu-latest
     steps:
       - name:  Login to Azure
@@ -68,11 +72,37 @@ jobs:
          environmentVariables: |
            ASPNETCORE_ENVIRONMENT=Production
         
-       # imageToDeploy  $ACR_LOGIN_SERVER/coworking-svc:$GITHUB_SHA
-        # imageToDeploy
-       # run: |
-      #    az containerapp update \
-       #     --name ${{ env.CONTAINERAPP_NAME }} \
-       #     --resource-group ${{ env.RESOURCE_GROUP }} \
-       #     --image ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }} \
-       #     --set-env-vars ASPNETCORE_ENVIRONMENT=Production
+        
+## ─── 3) build deploy frontend ────────────────────────────────────────────────────────────────
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: ./RadencyFront
+
+      - name: Build Angular app (production)
+        run: npm run build -- --configuration production
+        working-directory: ./RadencyFront
+      
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          # Folder where your Angular code lives
+          app_location: "./RadencyFront"           
+          # No Azure Functions / API in this job, so leave API location blank
+          api_location: ""                   
+          # The folder containing the production build output
+          app_artifact_location: "./RadencyFront/dist"
