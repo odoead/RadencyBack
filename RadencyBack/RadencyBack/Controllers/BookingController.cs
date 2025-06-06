@@ -1,12 +1,19 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using RadencyBack.DTO.booking;
+using RadencyBack.Exceptions;
 using RadencyBack.Interfaces;
 
 namespace RadencyBack.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status501NotImplemented)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status422UnprocessableEntity)]
     public class BookingController : Controller
     {
         private readonly IBookingService bookingService;
@@ -21,14 +28,17 @@ namespace RadencyBack.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<BookingDTO>>> GetAllBookings()
+        [ProducesResponseType(typeof(List<GetBookingDTO>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<GetBookingDTO>>> GetAllBookings()
         {
             var bookings = await bookingService.GetAllBookingsAsync();
             return Ok(bookings);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookingDTO>> GetBookingByID(int id)
+        [ProducesResponseType(typeof(GetBookingDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<GetBookingDTO>> GetBookingByID(int id)
         {
             var booking = await bookingService.GetBookingByIdAsync(id);
 
@@ -38,7 +48,10 @@ namespace RadencyBack.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BookingDTO>> CreateBooking([FromBody] CreateBookingDTO createBookingDto)
+        [ProducesResponseType(typeof(GetBookingDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<GetBookingDTO>> CreateBooking([FromBody] CreateBookingDTO createBookingDto)
         {
             var validationResult = await createValidator.ValidateAsync(createBookingDto);
             if (!validationResult.IsValid)
@@ -48,7 +61,8 @@ namespace RadencyBack.Controllers
 
             try
             {
-                var booking = await bookingService.CreateBookingAsync(createBookingDto.Name, createBookingDto.Email, createBookingDto.WorkspaceUnitId, createBookingDto.StartTimeUTC, createBookingDto.EndTimeUTC);
+                var booking = await bookingService.CreateBookingAsync(createBookingDto.Name, createBookingDto.Email, createBookingDto.WorkspaceUnitId,
+                    createBookingDto.StartTimeLOC, createBookingDto.EndTimeLOC, createBookingDto.TimeZoneId);
                 return CreatedAtAction(nameof(GetBookingByID), new { id = booking.Id }, booking);
             }
             catch (InvalidOperationException ex)
@@ -58,7 +72,11 @@ namespace RadencyBack.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<BookingDTO>> UpdateBookingByID(int id, [FromBody] UpdateBookingDTO updateBookingDto)
+        [ProducesResponseType(typeof(GetBookingDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<GetBookingDTO>> UpdateBookingByID(int id, [FromBody] UpdateBookingDTO updateBookingDto)
         {
             var validationResult = await updateValidator.ValidateAsync(updateBookingDto);
             if (!validationResult.IsValid)
@@ -68,7 +86,7 @@ namespace RadencyBack.Controllers
 
             try
             {
-                var booking = await bookingService.UpdateBookingAsync(id, updateBookingDto.WorkspaceUnitId, updateBookingDto.StartTimeUTC, updateBookingDto.EndTimeUTC);
+                var booking = await bookingService.UpdateBookingAsync(id, updateBookingDto.WorkspaceUnitId, StartTimeLOC: updateBookingDto.StartTimeLOC, EndTimeLOC: updateBookingDto.EndTimeLOC, updateBookingDto.TimeZoneId);
 
                 if (booking == null)
                     return NotFound();
@@ -82,6 +100,8 @@ namespace RadencyBack.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteBookingByID(int id)
         {
             var result = await bookingService.DeleteBookingAsync(id);

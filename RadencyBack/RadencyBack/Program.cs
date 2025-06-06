@@ -7,8 +7,20 @@ using RadencyBack.Exceptions;
 using RadencyBack.Interfaces;
 using RadencyBack.NewFolder;
 using RadencyBack.Services;
+using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = true;
+    options.SingleLine = true;
+    options.TimestampFormat = "HH:mm:ss ";
+});
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -20,6 +32,22 @@ var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_S
 
 builder.Services.AddDbContext<Context>(options =>
     options.UseNpgsql(connectionString));
+
+// Swagger config
+builder.Services.AddSwaggerExamples();
+builder.Services.AddSwaggerExamplesFromAssemblies(Assembly.GetExecutingAssembly());
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Radency Coworking API",
+        Version = "v1",
+    });
+
+    var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
 
 // Services 
 builder.Services.AddScoped<IValidator<Amenity>, AmenityValidator>();
@@ -48,9 +76,9 @@ builder.Services.AddCors(options =>
                            ?? new[] { "http://localhost:4200", "https://localhost:4200" };
 
         policy.WithOrigins(allowedOrigins)
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+             .AllowAnyMethod()
+             .AllowAnyHeader()
+             .AllowCredentials();
     });
 });
 
@@ -60,7 +88,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "RadencyBack v1");
+        c.EnableDeepLinking();
+        c.DefaultModelExpandDepth(0);
+    });
 }
 
 app.ConfigureExceptionHandler();
@@ -70,10 +104,12 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Seed data
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<CoworkingDbContext>();
-//    await SeedData(context);
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<Context>();
+    await dbContext.Database.MigrateAsync();
+
+    await Seeder.SeedDataAsync(dbContext);
+}
 
 app.Run();

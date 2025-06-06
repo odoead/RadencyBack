@@ -4,28 +4,23 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 80 
-EXPOSE 443
+EXPOSE 8080
+
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-
-# Copy the solution and then project files to the build context
-COPY ["RadencyBack/RadencyBack.sln", "RadencyBack/"]
-COPY ["RadencyBack/RadencyBack/RadencyBack.csproj", "RadencyBack/RadencyBack/"]
-
-RUN dotnet restore "RadencyBack/RadencyBack.sln"
+COPY ["RadencyBack/RadencyBack.csproj", "RadencyBack/"]
+RUN dotnet restore "./RadencyBack/RadencyBack.csproj"
 COPY . .
-WORKDIR "/src/RadencyBack/RadencyBack"
-RUN dotnet build "RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/RadencyBack"
+RUN dotnet build "./RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-# WORKDIR is inherited: /src/RadencyBack/RadencyBack
-RUN dotnet publish "RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RadencyBack.DTO.booking;
 using RadencyBack.Entities;
+using RadencyBack.Exceptions;
 using RadencyBack.Interfaces;
 using RadencyBack.NewFolder;
 
@@ -17,12 +18,12 @@ namespace RadencyBack.Services
             this.coworkingService = coworkingService;
         }
 
-        public async Task<List<BookingDTO>> GetAllBookingsAsync()
+        public async Task<List<GetBookingDTO>> GetAllBookingsAsync()
         {
             var bookings = await dbcontext.Bookings.Include(b => b.UserInfo)
                  .Include(b => b.WorkspaceUnit).ThenInclude(w => w.Coworking).ToListAsync();
 
-            return bookings.Select(b => new BookingDTO
+            return bookings.Select(b => new GetBookingDTO
             {
                 Id = b.Id,
                 UserName = b.UserInfo.Name,
@@ -31,17 +32,20 @@ namespace RadencyBack.Services
                 WorkspaceType = GetWorkspaceTypeName(b.WorkspaceUnit),
                 WorkspaceCapacity = GetWorkspaceCapacity(b.WorkspaceUnit),
                 CoworkingName = b.WorkspaceUnit.Coworking.Name,
-                StartTimeUTC = b.StartTimeUTC,
-                EndTimeUTC = b.EndTimeUTC,
+                StartTimeLOC = TimezoneConverter.GetLocalFromUtc(b.StartTimeUTC, b.TimeZoneId),
+                EndTimeLOC = TimezoneConverter.GetLocalFromUtc(b.EndTimeUTC, b.TimeZoneId),
+                TimeZoneId = b.TimeZoneId,
             }).ToList();
         }
 
-        public async Task<BookingDTO?> GetBookingByIdAsync(int id)
+        public async Task<GetBookingDTO?> GetBookingByIdAsync(int id)
         {
             var booking = await dbcontext.Bookings.Include(b => b.UserInfo)
                 .Include(b => b.WorkspaceUnit).ThenInclude(w => w.Coworking).Where(b => b.Id == id).ToListAsync();
+            if (booking.Count == 0)
+                throw new NotFoundException($"Booking with id {id} not found.");
 
-            return booking.Select(b => new BookingDTO
+            return booking.Select(b => new GetBookingDTO
             {
                 Id = b.Id,
                 UserName = b.UserInfo.Name,
@@ -50,17 +54,20 @@ namespace RadencyBack.Services
                 WorkspaceType = GetWorkspaceTypeName(b.WorkspaceUnit),
                 WorkspaceCapacity = GetWorkspaceCapacity(b.WorkspaceUnit),
                 CoworkingName = b.WorkspaceUnit.Coworking.Name,
-                StartTimeUTC = b.StartTimeUTC,
-                EndTimeUTC = b.EndTimeUTC,
+                StartTimeLOC = TimezoneConverter.GetLocalFromUtc(b.StartTimeUTC, b.TimeZoneId),
+                EndTimeLOC = TimezoneConverter.GetLocalFromUtc(b.EndTimeUTC, b.TimeZoneId),
+                TimeZoneId = b.TimeZoneId,
             }).FirstOrDefault();
         }
 
-        public async Task<BookingDTO> CreateBookingAsync(string Name, string Email, int WorkspaceUnitId, DateTime StartTimeUTC, DateTime EndTimeUTC)
+        public async Task<GetBookingDTO> CreateBookingAsync(string Name, string Email, int WorkspaceUnitId, DateTime StartTimeLOC, DateTime EndTimeLOC, string TimeZoneId)
         {
-            var doesCoworkingAvailable = await coworkingService.CheckAvailabilityAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, null);
+            var StartTimeUTC = TimezoneConverter.GetUtcFromLocal(StartTimeLOC, TimeZoneId);
+            var EndTimeUTC = TimezoneConverter.GetUtcFromLocal(EndTimeLOC, TimeZoneId);
+            var doesCoworkingAvailable = await coworkingService.CheckAvailabilityUTCAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, null);
             if (!doesCoworkingAvailable)
             {
-                throw new InvalidOperationException("Selected time is not available. Please choose a different slot.");
+                throw new BadRequestException("Selected time is not available. Please choose a different slot.");
             }
 
             var userInfo = await dbcontext.UserBookingInfos.FirstOrDefaultAsync(u => u.Email == Email);
@@ -69,10 +76,9 @@ namespace RadencyBack.Services
                 userInfo = new UserBookingInfo
                 {
                     Name = Name,
-                    Email = Email
+                    Email = Email,
                 };
                 dbcontext.UserBookingInfos.Add(userInfo);
-                await dbcontext.SaveChangesAsync();
             }
 
             var booking = new Booking
@@ -80,28 +86,35 @@ namespace RadencyBack.Services
                 WorkspaceUnitId = WorkspaceUnitId,
                 StartTimeUTC = StartTimeUTC,
                 EndTimeUTC = EndTimeUTC,
-                UserInfoId = userInfo.Id
+                UserInfo = userInfo,
+                TimeZoneId = TimeZoneId,
             };
-
             dbcontext.Bookings.Add(booking);
+
             await dbcontext.SaveChangesAsync();
             return await GetBookingByIdAsync(booking.Id);
         }
 
-        public async Task<BookingDTO?> UpdateBookingAsync(int id, int WorkspaceUnitId, DateTime StartTimeUTC, DateTime EndTimeUTC)
+        public async Task<GetBookingDTO?> UpdateBookingAsync(int id, int WorkspaceUnitId, DateTime StartTimeLOC, DateTime EndTimeLOC, string TimeZoneId)
         {
-            var booking = await dbcontext.Bookings.FindAsync(id);
-            if (booking == null) return null;
+            var booking = await dbcontext.Bookings.FirstOrDefaultAsync(q => q.Id == id) ??
+                throw new NotFoundException($"Booking with id {id} not found.");
 
-            var doesCoworkingAvailable = await coworkingService.CheckAvailabilityAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, id);
+
+
+
+            var StartTimeUTC = TimezoneConverter.GetUtcFromLocal(StartTimeLOC, TimeZoneId);
+            var EndTimeUTC = TimezoneConverter.GetUtcFromLocal(EndTimeLOC, TimeZoneId);
+            var doesCoworkingAvailable = await coworkingService.CheckAvailabilityUTCAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, id);
             if (!doesCoworkingAvailable)
             {
-                throw new InvalidOperationException("Selected time is not available. Please choose a different slot.");
+                throw new BadRequestException("Selected time is not available. Please choose a different slot.");
             }
 
             booking.WorkspaceUnitId = WorkspaceUnitId;
             booking.StartTimeUTC = StartTimeUTC;
             booking.EndTimeUTC = EndTimeUTC;
+            booking.TimeZoneId = TimeZoneId;
 
             await dbcontext.SaveChangesAsync();
             return await GetBookingByIdAsync(id);

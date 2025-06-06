@@ -1,0 +1,14 @@
+<mat-card class="card">
+    <mat-card-title>{{ booking.workspaceType }} - {{ booking.coworkingName }}</mat-card-title>
+    <mat-card-content>
+        <p>
+            {{ booking.startTimeLOC | date:'short' }} -
+            {{ booking.endTimeLOC | date:'short' }}
+            {{ booking.timeZoneId ? '(' + booking.timeZoneId + ')' : '' }}
+        </p>
+    </mat-card-content>
+    <mat-card-actions class="btn-group">
+        <button mat-raised-button color="primary" (click)="edit.emit()">Edit</button>
+        <button mat-raised-button color="primary" color="warn" (click)="delete.emit()">Delete</button>
+    </mat-card-actions>
+</mat-card>

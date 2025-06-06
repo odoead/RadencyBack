@@ -1,0 +1,121 @@
+/* header.component.scss */
+
+.header-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+    background: var(--primary-color);
+    color: white;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+
+    @media (max-width: 768px) {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+    }
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.25rem;
+
+    .logo-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+    }
+
+    @media (max-width: 768px) {
+        .logo-text {
+            font-size: 1rem;
+        }
+    }
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--spacing-sm);
+
+    a {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        color: rgba(255, 255, 255, 0.9);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--border-radius);
+
+
+
+        &.active-link {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        display: none;
+    }
+}
+
+.mobile-nav {
+    display: none;
+
+    button {
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        display: block;
+    }
+}
+
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--primary-color);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow);
+
+    &.open {
+        display: flex;
+    }
+
+    a {
+        color: rgba(255, 255, 255, 0.9);
+        justify-content: flex-start;
+        margin-bottom: var(--spacing-sm);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--border-radius);
+
+
+
+        &.active-link {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+}

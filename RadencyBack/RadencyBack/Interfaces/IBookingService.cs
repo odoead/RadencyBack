@@ -4,10 +4,10 @@ namespace RadencyBack.Interfaces
 {
     public interface IBookingService
     {
-        Task<List<BookingDTO>> GetAllBookingsAsync();
-        Task<BookingDTO?> GetBookingByIdAsync(int id);
-        Task<BookingDTO> CreateBookingAsync(string Name, string Email, int WorkspaceUnitId, DateTime StartTimeUTC, DateTime EndTimeUTC);
-        Task<BookingDTO?> UpdateBookingAsync(int id, int WorkspaceUnitId, DateTime StartTimeUTC, DateTime EndTimeUTC);
+        Task<List<GetBookingDTO>> GetAllBookingsAsync();
+        Task<GetBookingDTO?> GetBookingByIdAsync(int id);
+        Task<GetBookingDTO> CreateBookingAsync(string Name, string Email, int WorkspaceUnitId, DateTime StartTimeLOC, DateTime EndTimeLOC, string TimeZoneId);
+        Task<GetBookingDTO?> UpdateBookingAsync(int id, int WorkspaceUnitId, DateTime StartTimeLOC, DateTime EndTimeLOC, string TimeZoneId);
         Task<bool> DeleteBookingAsync(int id);
 
     }

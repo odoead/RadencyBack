@@ -1,0 +1,64 @@
+<div class="container">
+    <h2>{{ mode === "new" ? "Create Booking" : "Edit Booking" }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" />
+                <mat-error *ngIf="form.get('name')?.hasError('required') && form.get('name')?.touched">
+                    Name is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="form-field" appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" formControlName="email" />
+                <mat-error *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched">
+                    Email is required
+                </mat-error>
+                <mat-error *ngIf="form.get('email')?.hasError('email') && form.get('email')?.touched">
+                    Please enter a valid email
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- Workspace Selection -->
+        <app-workspace-selection [workspaceTypes]="workspaceTypes"
+            [selectedWorkspaceType]="form.get('workspaceType')?.value" [selectedUnit]="form.get('selectedUnit')?.value"
+            (workspaceTypeChange)="form.get('workspaceType')?.setValue($event)"
+            (unitChange)="form.get('selectedUnit')?.setValue($event)">
+        </app-workspace-selection>
+        <mat-error *ngIf="form.get('workspaceType')?.hasError('required') && form.get('workspaceType')?.touched"
+            class="error-message">
+            Workspace type is required.
+        </mat-error>
+        <mat-error
+            *ngIf="form.get('selectedUnit')?.hasError('required') && form.get('selectedUnit')?.touched && form.get('workspaceType')?.value"
+            class="error-message">
+            Please select a desk or room.
+        </mat-error>
+
+        <!-- Date & Time -->
+        <app-calendar *ngIf="form.get('selectedUnit')?.value" [unavailableRanges]="unavailableRanges"
+            [workspaceType]="form.get('workspaceType')?.value" [selectedRange]="form.get('dateTimeRange')?.value"
+            (rangeChange)="form.get('dateTimeRange')?.setValue($event)"
+            (validationChange)="form.get('dateTimeRange')?.setErrors($event ? null : { 'invalidRange': true })">
+        </app-calendar>
+        <mat-error *ngIf="form.get('dateTimeRange')?.hasError('required') && form.get('dateTimeRange')?.touched"
+            class="custom-form-error">
+            Date and time selection is required.
+        </mat-error>
+        <mat-error *ngIf="form.get('dateTimeRange')?.hasError('invalidRange') && form.get('dateTimeRange')?.touched"
+            class="custom-form-error">
+            The selected date/time range is invalid or has issues.
+        </mat-error>
+
+        <!-- submit -->
+        <div class="btn-group end">
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+                {{ mode === "new" ? "Book Now" : "Save" }}
+            </button>
+        </div>
+    </form>
+</div>

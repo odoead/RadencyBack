@@ -12,6 +12,9 @@ namespace RadencyBack.Exceptions
             {
                 appError.Run(async context =>
                 {
+                    var loggerFactory = context.RequestServices.GetService(typeof(ILoggerFactory)) as ILoggerFactory;
+                    var logger = loggerFactory?.CreateLogger("GlobalExceptionHandler");
+
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     context.Response.ContentType = "application/json";
 
@@ -23,7 +26,8 @@ namespace RadencyBack.Exceptions
                         context.Response.StatusCode = statusCode;
 
                         //logger error
-
+                        logger?.LogError(error, "An unhandled exception occurred: {Message}", error.Message);
+                        //
                         var response = new ApiErrorResponse
                         {
                             StatusCode = statusCode,

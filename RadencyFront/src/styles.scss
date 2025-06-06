@@ -1,0 +1,173 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@angular/material'as mat;
+@include mat.core();
+
+
+html,
+body {
+    height: 100%;
+}
+
+:root {
+    --primary-color: #1976d2;
+    --accent-color: #94c9ff;
+    --warn-color: #f44336;
+    --success-color: #4caf50;
+    --background-color: #fafafa;
+    --surface-color: #ffffff;
+
+    --text-primary: rgba(0, 0, 0, 0.87);
+    --text-secondary: rgba(0, 0, 0, 0.6);
+
+    --border-color: rgba(0, 0, 0, 0.12);
+    --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --border-radius: 8px;
+
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+
+
+.container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-md);
+    padding-right: var(--spacing-md);
+
+    @media (max-width: 768px) {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+    }
+}
+
+.page-header {
+    margin-bottom: var(--spacing-xl);
+
+    h1 {
+        font-size: 2rem;
+        color: var(--text-primary);
+
+        @media (max-width: 768px) {
+            font-size: 1.5rem;
+        }
+    }
+
+    p {
+        margin-top: var(--spacing-sm);
+        color: var(--text-secondary);
+    }
+}
+
+ 
+.card {
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+
+
+}
+
+.btn-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+
+    &.center {
+        justify-content: center;
+    }
+
+    &.end {
+        justify-content: flex-end;
+    }
+
+    &.full-width button,
+    &.full-width .mat-button {
+        flex-grow: 1;
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+        }
+    }
+}
+
+.form-row {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+
+    .form-field {
+        flex: 1;
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+}
+
+mat-icon {
+    vertical-align: middle;
+    font-size: 24px;
+    color: var(--text-secondary);
+}
+
+.error-message {
+    color: var(--warn-color);
+    font-size: 0.8rem;
+    margin-top: var(--spacing-xs);
+}
+
+.success-message {
+    color: var(--success-color);
+    font-size: 0.8rem;
+    margin-top: var(--spacing-xs);
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-secondary);
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: var(--spacing-md);
+        opacity: 0.5;
+    }
+}
+
+mat-card {
+    border-radius: var(--border-radius);
+}
+
+mat-form-field {
+    .mat-form-field-outline {
+        stroke: var(--border-color);
+    }
+}

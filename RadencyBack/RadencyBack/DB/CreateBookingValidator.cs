@@ -23,16 +23,16 @@ namespace RadencyBack.DB
                 .NotEmpty().WithMessage("Workspace selection is required")
                 .MustAsync(async (dto, cancellation) => await BookingSharedValidatorHelper.WorkspaceExists(dto, dbcontext, cancellation)).WithMessage("Selected workspace does not exist");
 
-            RuleFor(x => x.StartTimeUTC)
+            RuleFor(x => x.StartTimeLOC)
                 .NotEmpty().WithMessage("Start time is required")
-                .Must((xx, cancellation) => BookingSharedValidatorHelper.IsInUTCFuture(xx.StartTimeUTC)).WithMessage("Start time must be in the future");
+                .Must((xx, cancellation) => BookingSharedValidatorHelper.IsInUTCFuture(TimezoneConverter.GetUtcFromLocal(xx.StartTimeLOC, xx.TimeZoneId))).WithMessage("Start time must be in the future");
 
-            RuleFor(x => x.EndTimeUTC)
+            RuleFor(x => x.EndTimeLOC)
                 .NotEmpty().WithMessage("End time is required")
-                .GreaterThan(x => x.StartTimeUTC).WithMessage("End time must be after start time");
+                .GreaterThan(x => x.StartTimeLOC).WithMessage("End time must be after start time");
 
             RuleFor(x => x)
-                .MustAsync(async (dto, cancellation) => await BookingSharedValidatorHelper.IsInDurationLimits(dto.WorkspaceUnitId, dto.StartTimeUTC, dto.EndTimeUTC, dbcontext, cancellation))
+                .MustAsync(async (dto, cancellation) => await BookingSharedValidatorHelper.IsInDurationLimits(WorkspaceID: dto.WorkspaceUnitId, StartTimeUTC: TimezoneConverter.GetUtcFromLocal(dto.StartTimeLOC, dto.TimeZoneId), EndTimeUTC: TimezoneConverter.GetUtcFromLocal(dto.EndTimeLOC, dto.TimeZoneId), dbcontext: dbcontext, cancellation))
                 .WithMessage("Booking duration exceeds maximum allowed time");
         }
 

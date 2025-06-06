@@ -1,0 +1,92 @@
+<mat-card class="card calendar-card">
+    <mat-card-header>
+        <mat-card-title>
+            <mat-icon fontIcon="schedule"></mat-icon>
+            Select Date & Time
+        </mat-card-title>
+        <mat-card-subtitle *ngIf="workspaceType">
+            Maximum duration: {{ getMaxDurationText() }}
+        </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <div class="datetime-form">
+
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Start Date</mat-label>
+                    <input matInput [matDatepicker]="startDatePicker" [formControl]="startDateControl" [min]="minDate"
+                        readonly>
+                    <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #startDatePicker></mat-datepicker>
+                    <mat-error *ngIf="startDateControl.hasError('required') && startDateControl.touched">Start date is
+                        required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Start Time</mat-label>
+                    <input matInput type="time" [formControl]="startTimeControl" [min]="getMinStartTime()" step="900">
+                    <mat-error *ngIf="startTimeControl.hasError('required') && startTimeControl.touched">Start time is
+                        required</mat-error>
+                    <mat-error *ngIf="startTimeControl.hasError('pastTime') && startTimeControl.touched">Cannot select
+                        past time</mat-error>
+                </mat-form-field>
+            </div>
+
+            <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>End Date</mat-label>
+                    <input matInput [matDatepicker]="endDatePicker" [formControl]="endDateControl"
+                        [min]="startDateControl.value || minDate" [max]="maxEndDate" readonly>
+                    <mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endDatePicker></mat-datepicker>
+                    <mat-error *ngIf="endDateControl.hasError('required') && endDateControl.touched">End date is
+                        required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>End Time</mat-label>
+                    <input matInput type="time" [formControl]="endTimeControl" step="900"> <mat-error
+                        *ngIf="endTimeControl.hasError('required') && endTimeControl.touched">End time is
+                        required</mat-error>
+                    <mat-error *ngIf="endTimeControl.hasError('invalidEndTime') && endTimeControl.touched">End time must
+                        be after start time</mat-error>
+                </mat-form-field>
+            </div>
+
+            <div class="info-section">
+                <div class="duration-info" *ngIf="createDateTimeRangeFromControls() as currentRange">
+                    <mat-icon fontIcon="access_time"></mat-icon>
+                    <span>Selected Duration: {{ formatDuration(currentRange) }}</span>
+                    <ng-container *ngIf="isDurationExceeded(currentRange)">
+                        <div class="validation-error">
+                            <mat-icon fontIcon="warning" color="warn"></mat-icon>
+                            <span>Exceeds maximum allowed duration.</span>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div *ngIf="isCurrentRangePotentiallyUnavailable()" class="validation-error unavailable-slot-warning">
+                    <mat-icon fontIcon="error_outline" color="warn"></mat-icon>
+                    <span>Warning: The selected time slot may overlap with an existing booking.</span>
+                </div>
+
+                <div class="timezone-info">
+                    <mat-icon fontIcon="public"></mat-icon>
+                    <span>All times are in your local timezone: {{ timezoneName || 'Not specified' }}</span>
+                </div>
+            </div>
+
+            <div class="quick-duration-buttons" *ngIf="workspaceType && getQuickDurations().length > 0">
+                <h4>Quick Durations:</h4>
+                <div class="button-group">
+                    <button mat-stroked-button *ngFor="let duration of getQuickDurations()"
+                        (click)="setQuickDuration(duration)"
+                        [disabled]="!startDateControl.value || !startTimeControl.value || !startDateControl.valid || !startTimeControl.valid">
+                        {{ duration.label }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

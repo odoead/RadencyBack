@@ -1,0 +1,51 @@
+.calendar-card {}
+
+.info-section {
+    margin-top: var(--spacing-md);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+
+    mat-icon {
+
+        margin-right: var(--spacing-xs);
+    }
+
+    .duration-info,
+    .timezone-info {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        margin-bottom: var(--spacing-sm);
+    }
+}
+
+.validation-error {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--warn-color);
+    font-size: 0.875rem;
+
+    mat-icon {
+        font-size: 18px;
+    }
+}
+
+.quick-duration-buttons {
+    margin-top: var(--spacing-md);
+
+    h4 {
+        margin-bottom: var(--spacing-sm);
+        color: var(--text-primary);
+    }
+
+    .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+
+        button {
+            flex: 1 1 auto;
+        }
+    }
+}
