@@ -1,20 +1,22 @@
 import { Injectable } from '@angular/core';
 import { UpdateBooking } from '../Entities/UpdateBooking';
 import { catchError, Observable, throwError } from 'rxjs';
- import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CreateBooking } from '../Entities/CreateBooking';
- import { HeadersService } from './headers.service';
+import { HeadersService } from './headers.service';
 import { environment } from '../../../environments/environment.development';
 import { Booking } from '../Entities/Booking';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = environment.coworkingUrl + "/api" + "/booking";//get from environment
 
-
-  constructor(private http: HttpClient) { }
+  private apiUrl!: string;
+  constructor(private http: HttpClient, private configService: ConfigService) {
+    this.apiUrl = this.configService.coworkingUrl + "/api/booking";
+  }
 
   getAllBookings(isPageLoad: boolean): Observable<Booking[]> {
     isPageLoad ? HeadersService.setPageLoad() : undefined;

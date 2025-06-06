@@ -6,15 +6,17 @@ import { AvailabilityCheck } from '../Entities/AvailabilityCheck';
 import { HeadersService } from './headers.service';
 import { UnavailableWorkspaceUnitLOCRanges, } from '../Entities/UnavailableWorkspaceUnitLOCRanges';
 import { environment } from '../../../environments/environment.development';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoworkingService {
 
-  private apiUrl = environment.coworkingUrl + "/api" + "/coworking";
-
-  constructor(private http: HttpClient) { }
+  private apiUrl!: string;
+  constructor(private http: HttpClient, private configService: ConfigService) {
+    this.apiUrl = this.configService.coworkingUrl + "/api/coworking";
+  }
 
   getCoworkingDetailsById(id: number, isPageLoad: boolean): Observable<CoworkingDetails> {
     isPageLoad ? HeadersService.setPageLoad() : undefined;
