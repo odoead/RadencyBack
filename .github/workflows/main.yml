@@ -71,6 +71,7 @@ jobs:
          containerAppName: ${{ env.CONTAINERAPP_NAME }}
          environmentVariables: |
            ASPNETCORE_ENVIRONMENT=Production
+           
         
         
 ## ─── 3) build deploy frontend ────────────────────────────────────────────────────────────────
