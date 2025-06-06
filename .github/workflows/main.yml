@@ -80,6 +80,8 @@ jobs:
          environmentVariables: |
            ASPNETCORE_ENVIRONMENT=Production 
            DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
+            ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
+
            
         
         
