@@ -6,21 +6,26 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 
-
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copy project file and restore dependencies (for better layer caching)
 COPY ["RadencyBack/RadencyBack.csproj", "RadencyBack/"]
 RUN dotnet restore "./RadencyBack/RadencyBack.csproj"
+
+# Copy all source code
 COPY . .
 WORKDIR "/src/RadencyBack"
-RUN dotnet build "./RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
+# Build the application
+RUN dotnet build "./RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/build --no-restore
+
+# Publish stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./RadencyBack.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final

@@ -7,6 +7,11 @@
     </div>
 
     <nav class="nav-links">
+        <a mat-button routerLink="/coworking/2" routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{exact: false}" (click)="closeMobileMenu()">
+
+            Coworking 2
+        </a>
         <a mat-button routerLink="/coworking/1" routerLinkActive="active-link"
             [routerLinkActiveOptions]="{ exact: false }">
             <mat-icon>location_city</mat-icon>
@@ -26,6 +31,12 @@
 
 
     <div class="mobile-menu" [class.open]="isMobileMenuOpen">
+        <a mat-button routerLink="/coworking/2" routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{exact: false}" (click)="closeMobileMenu()">
+
+            Coworking 2
+        </a>
+
         <a mat-button routerLink="/coworking/1" routerLinkActive="active-link"
             [routerLinkActiveOptions]="{exact: false}" (click)="closeMobileMenu()">
             <mat-icon>location_city</mat-icon>
