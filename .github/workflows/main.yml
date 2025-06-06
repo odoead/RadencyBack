@@ -38,7 +38,9 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
       
       - name: Get path
-        run: pwd
+        run: |
+          pwd
+          ls -la
 
       - name:  Build & Push image
         id: build-push
