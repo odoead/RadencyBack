@@ -45,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./RadencyBack/RadencyBack/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}
         # expose the fully-qualified image ref as a job output
