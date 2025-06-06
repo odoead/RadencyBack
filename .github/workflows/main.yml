@@ -77,7 +77,7 @@ jobs:
          resourceGroup: ${{ env.RESOURCE_GROUP }}
          containerAppName: ${{ env.CONTAINERAPP_NAME }}
          environmentVariables: |
-           ASPNETCORE_ENVIRONMENT=Production
+           ASPNETCORE_ENVIRONMENT=Production DefaultConnection="${{ secrets.DATABASE_CONNECTION_STRING }}"
            
         
         
