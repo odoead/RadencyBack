@@ -28,10 +28,11 @@ services:
 
   coworking-svc:
     build:
-      context: ./RadencyBack
+      context: RadencyBack
       dockerfile: RadencyBack/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
       - DATABASE_CONNECTION_STRING=Host=postgres;Port=5432;Database=coworking;Username=postgres;Password=postgres
     ports:
       - 5247:8080
