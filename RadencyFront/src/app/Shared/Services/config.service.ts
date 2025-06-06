@@ -6,20 +6,35 @@ import { firstValueFrom } from 'rxjs';
   providedIn: 'root'
 })
 export class ConfigService {
-  private config: any;
+  private config: any = {};
+  private configLoaded = false;
 
   constructor(private http: HttpClient) { }
 
-  async loadConfig() {
-    const configPath = '/assets/config.json'; // Replace with environment variable or service if needed
-    this.config = await firstValueFrom(this.http.get(configPath));
-  }
+  async loadConfig(): Promise<void> {
+    try {
+      const data = await firstValueFrom(this.http.get('/assets/config.json'));
+      this.config = data;
+      this.configLoaded = true;
+    } catch (error) {
+      console.error('Error loading config:', error);
 
-  setConfig(config: any) {
-    this.config = config;
+
+      this.config = {
+        coworkingUrl: 'http://localhost:5247'
+      };
+      this.configLoaded = true;
+    }
   }
 
   get coworkingUrl(): string {
+    if (!this.configLoaded) {
+      console.warn('Config not loaded yet, returning empty string');
+    }
     return this.config?.coworkingUrl || '';
+  }
+
+  isConfigLoaded(): boolean {
+    return this.configLoaded;
   }
 }
