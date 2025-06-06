@@ -13,19 +13,24 @@ import { ConfigService } from './config.service';
 })
 export class CoworkingService {
 
-  private apiUrl!: string;
-  constructor(private http: HttpClient, private configService: ConfigService) {
-    this.apiUrl = this.configService.coworkingUrl + "/api/coworking";
+  private getApiUrl(): string {
+    const baseUrl = this.configService.coworkingUrl;
+    if (!baseUrl) {
+      console.error('Config not loaded or coworkingUrl is empty');
+      return '/api/coworking';
+    }
+    return `${baseUrl}/api/coworking`;
+  } constructor(private http: HttpClient, private configService: ConfigService) {
   }
 
   getCoworkingDetailsById(id: number, isPageLoad: boolean): Observable<CoworkingDetails> {
     isPageLoad ? HeadersService.setPageLoad() : undefined;
-    return this.http.get<CoworkingDetails>(`${this.apiUrl}/${id}`)
+    return this.http.get<CoworkingDetails>(`${this.getApiUrl()}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
   checkAvailability(data: AvailabilityCheck): Observable<boolean> {
-    return this.http.post<boolean>(`${this.apiUrl}/check-availability`, data)
+    return this.http.post<boolean>(`${this.getApiUrl()}/check-availability`, data)
       .pipe(catchError(this.handleError));
   }
 
@@ -41,7 +46,7 @@ export class CoworkingService {
     if (excludeBookingId !== undefined && excludeBookingId !== null) {
       params = params.set('excludeBookingId', excludeBookingId.toString());
     }
-    return this.http.get<UnavailableWorkspaceUnitLOCRanges>(`${this.apiUrl}/unavailable-ranges/${workspaceUnitId}`, { params })
+    return this.http.get<UnavailableWorkspaceUnitLOCRanges>(`${this.getApiUrl()}/unavailable-ranges/${workspaceUnitId}`, { params })
       .pipe(catchError(this.handleError));
   }
 }

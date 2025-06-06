@@ -2,7 +2,7 @@
 <mat-dialog-content>
     {{ data.message }}
 </mat-dialog-content>
-<mat-dialog-actions>
-    <button mat-button (click)="dialogRef.close(false)">No</button>
-    <button mat-raised-button color="warn" (click)="dialogRef.close(true)">Yes</button>
+<mat-dialog-actions class="btn-group">
+    <button mat-raised-button color="primary" (click)="dialogRef.close(false)">No</button>
+    <button mat-raised-button color="primary" (click)="dialogRef.close(true)">Yes</button>
 </mat-dialog-actions>

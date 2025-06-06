@@ -13,35 +13,42 @@ import { ConfigService } from './config.service';
 })
 export class BookingService {
 
-  private apiUrl!: string;
+  private getApiUrl(): string {
+    const baseUrl = this.configService.coworkingUrl;
+    if (!baseUrl) {
+      console.error('Config not loaded or coworkingUrl is empty');
+      return '/api/booking';
+    }
+    return `${baseUrl}/api/booking`;
+  }
+
   constructor(private http: HttpClient, private configService: ConfigService) {
-    this.apiUrl = this.configService.coworkingUrl + "/api/booking";
   }
 
   getAllBookings(isPageLoad: boolean): Observable<Booking[]> {
     isPageLoad ? HeadersService.setPageLoad() : undefined;
-    return this.http.get<Booking[]>(this.apiUrl)
+    return this.http.get<Booking[]>(this.getApiUrl())
       .pipe(catchError(this.handleError));
   }
 
   getBookingById(id: number, isPageLoad: boolean): Observable<Booking> {
     isPageLoad ? HeadersService.setPageLoad() : undefined;
-    return this.http.get<Booking>(`${this.apiUrl}/${id}`)
+    return this.http.get<Booking>(`${this.getApiUrl()}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
   createBooking(booking: CreateBooking): Observable<Booking> {
-    return this.http.post<Booking>(this.apiUrl, booking)
+    return this.http.post<Booking>(this.getApiUrl(), booking)
       .pipe(catchError(this.handleError));
   }
 
   updateBooking(id: number, booking: UpdateBooking): Observable<Booking> {
-    return this.http.patch<Booking>(`${this.apiUrl}/${id}`, booking)
+    return this.http.patch<Booking>(`${this.getApiUrl()}/${id}`, booking)
       .pipe(catchError(this.handleError));
   }
 
   deleteBooking(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`)
+    return this.http.delete<void>(`${this.getApiUrl()}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
