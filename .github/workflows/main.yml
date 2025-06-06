@@ -41,6 +41,8 @@ jobs:
         run: |
           pwd
           ls -la
+          find . -type f
+
 
       - name:  Build & Push image
         id: build-push
