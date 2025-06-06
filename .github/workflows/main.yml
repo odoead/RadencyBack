@@ -36,6 +36,9 @@ jobs:
           registry: ${{ env.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
+      
+      - name: Get path
+        run: pwd
 
       - name:  Build & Push image
         id: build-push
