@@ -72,8 +72,11 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
-                           ?? new[] { "http://localhost:4200", "https://localhost:4200" };
+        var azureStaticWebAppsUrl = Environment.GetEnvironmentVariable("AZURE_STATIC_WEB_APPS_URL");
+        var allowedOrigins = azureStaticWebAppsUrl != null
+            ? new[] { azureStaticWebAppsUrl }
+            : builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+
 
         policy.WithOrigins(allowedOrigins)
              .AllowAnyMethod()
