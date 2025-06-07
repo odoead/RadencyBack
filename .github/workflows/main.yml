@@ -77,7 +77,7 @@ jobs:
          imageToDeploy: $ACR_LOGIN_SERVER/coworking-svc:$GITHUB_SHA
          resourceGroup: ${{ env.RESOURCE_GROUP }}
          containerAppName: ${{ env.CONTAINERAPP_NAME }}
-         environmentVariables: >
+         environmentVariables: |
           ASPNETCORE_ENVIRONMENT=Production 
           DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
           ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
