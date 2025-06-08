@@ -77,9 +77,10 @@ jobs:
         resourceGroup: ${{ env.RESOURCE_GROUP }}
         containerAppName: ${{ env.CONTAINERAPP_NAME }}
         environmentVariables: |
-         DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
-         ASPNETCORE_ENVIRONMENT=Production
-         ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
+          DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
+          ASPNETCORE_ENVIRONMENT=Production
+          ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
+          AZURE_STATIC_WEB_APPS_URL= ${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
         secretEnvironmentVariables: |
           DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
           ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
@@ -101,7 +102,7 @@ jobs:
           echo "{ \"coworkingUrl\": \"${COWORKING_URL}\" }" \
             > RadencyFront/src/assets/config.json
         env:
-          COWORKING_URL: ${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
+          COWORKING_URL: ${{ secrets.AZURE_CONTAINER_APP_URL }}
 
       - name: Get path
         run: |
