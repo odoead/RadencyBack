@@ -63,24 +63,25 @@ jobs:
 
   ## ─── 2) deploy backend ────────────────────────────────────────────────────────────────
   deploy-backend:
-    needs: build-backend
-    runs-on: ubuntu-latest
-    steps:
-      - name:  Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+   needs: build-backend
+   runs-on: ubuntu-latest
+   steps:
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name:  Deploy to Azure Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with: 
-         imageToDeploy: $ACR_LOGIN_SERVER/coworking-svc:$GITHUB_SHA
-         resourceGroup: ${{ env.RESOURCE_GROUP }}
-         containerAppName: ${{ env.CONTAINERAPP_NAME }}
-         environmentVariables: |
-          ASPNETCORE_ENVIRONMENT=Production 
+    - name: Deploy to Azure Container Apps
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        imageToDeploy: ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}
+        resourceGroup: ${{ env.RESOURCE_GROUP }}
+        containerAppName: ${{ env.CONTAINERAPP_NAME }}
+        environmentVariables: |
+          ASPNETCORE_ENVIRONMENT=Production
           DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
           ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
+
 
            
         
