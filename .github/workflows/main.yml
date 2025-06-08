@@ -92,6 +92,13 @@ jobs:
           submodules: true
           lfs: false
 
+      - name: Generate runtime config.json
+        run: |
+          echo "{ \"coworkingUrl\": \"${COWORKING_URL}\" }" \
+            > RadencyFront/src/assets/config.json
+        env:
+          COWORKING_URL: ${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
+
       - name: Get path
         run: |
           pwd
@@ -108,6 +115,4 @@ jobs:
           app_location: "./RadencyFront"                   
           api_location: ""                             
           output_location: "dist/radency-front/browser"
-        env:
-          COWORKING_URL: ${{  secrets.AZURE_STATIC_WEB_APPS_URL  }}
-  
+        
