@@ -102,3 +102,6 @@ jobs:
           app_location: "./RadencyFront"                   
           api_location: ""                             
           output_location: "dist/radency-front/browser"
+        env:
+          COWORKING_URL: ${{  secrets.AZURE_STATIC_WEB_APPS_URL  }}
+  
