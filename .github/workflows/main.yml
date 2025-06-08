@@ -19,7 +19,7 @@ env:
   STATIC_WEB_APP_NAME: app-coworking-front
 
 jobs:
-  ## ─── 1) build & push backend──────────────────────────────────────────────────────────
+  ## ─── 1) build & push backend────────────────────────────────────────────────────────── 
   build-backend:
     runs-on: ubuntu-latest
     outputs:
