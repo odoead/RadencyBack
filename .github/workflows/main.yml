@@ -44,7 +44,6 @@ jobs:
           ls -la
           find . -type f
 
-
       - name:  Build & Push image
         id: build-push
         uses: docker/build-push-action@v3
@@ -81,11 +80,7 @@ jobs:
           ASPNETCORE_ENVIRONMENT=Production
           DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
           ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
-
-
-           
-        
-        
+          
 ## ─── 3) build deploy frontend ────────────────────────────────────────────────────────────────
   deploy-frontend:
     runs-on: ubuntu-latest
