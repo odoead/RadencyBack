@@ -52,7 +52,7 @@ jobs:
           file: RadencyBack/RadencyBack/Dockerfile
           push: true
           tags: ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}
-        # expose the fully-qualified image ref as a job output
+        # expose the fully-qualified image ref as a job  output
       - name:  Set output
         id: set-output
         run: echo "image=$ACR_LOGIN_SERVER/coworking-svc:$GITHUB_SHA" >> $GITHUB_OUTPUT
