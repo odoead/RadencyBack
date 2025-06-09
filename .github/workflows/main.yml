@@ -76,8 +76,8 @@ jobs:
          az containerapp secret set \
             --name ${{ env.CONTAINERAPP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --secrets database-connection="${{ secrets.DATABASE_CONNECTION }}" \
-            azure-static-web-app-url="${{ secrets.AZURE_STATIC_WEB_APP_URL }}"
+            --secrets database-connection=secretref:DATABASE_CONNECTION \
+                       azure-static-web-app-url=secretref:AZURE_STATIC_WEB_APP_URL
           
           # Update the container app with new image and environment variables
           az containerapp update \
