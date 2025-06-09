@@ -65,22 +65,28 @@ jobs:
    needs: build-backend
    runs-on: ubuntu-latest
    steps:
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Deploy to Azure Container Apps
-      uses: azure/container-apps-deploy-action@v1
-      with:
-        imageToDeploy: ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }}
-        resourceGroup: ${{ env.RESOURCE_GROUP }}
-        containerAppName: ${{ env.CONTAINERAPP_NAME }}
-        environmentVariables: |
-          ASPNETCORE_ENVIRONMENT=Production
-          DATABASE_CONNECTION_STRING=secretref:database-connection
-          ConnectionStrings__DefaultConnection=secretref:database-connection
-          AZURE_STATIC_WEB_APPS_URL=secretref:azure-static-web-app-url
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+       
+# First ensure secrets exist
+      - name: Deploy to Azure Container Apps
+        run: |
+         az containerapp secret set \
+            --name ${{ env.CONTAINERAPP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --secrets database-connection="${{ secrets.DATABASE_CONNECTION }}" \
+            azure-static-web-app-url="${{ secrets.AZURE_STATIC_WEB_APP_URL }}"
+          
+          # Update the container app with new image and environment variables
+          az containerapp update \
+            --name ${{ env.CONTAINERAPP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }} \
+            --set-env-vars ASPNETCORE_ENVIRONMENT=Production \
+            DATABASE_CONNECTION_STRING=secretref:database-connection \
+            AZURE_STATIC_WEB_APPS_URL=secretref:azure-static-web-app-url
 #          DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
 #          ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
 #          AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
