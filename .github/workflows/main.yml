@@ -77,10 +77,10 @@ jobs:
         resourceGroup: ${{ env.RESOURCE_GROUP }}
         containerAppName: ${{ env.CONTAINERAPP_NAME }}
         environmentVariables: |
-          DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
           ASPNETCORE_ENVIRONMENT=Production
-          ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
-          AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
+#          DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
+#          ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
+#          AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
           
 ## ─── 3) build deploy frontend ────────────────────────────────────────────────────────────────
   deploy-frontend:
