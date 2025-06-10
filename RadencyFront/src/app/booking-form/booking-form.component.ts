@@ -30,18 +30,19 @@ import { CoworkingService } from '../Shared/Services/coworking.service';
     MatButtonModule,
     WorkspaceSelectionComponent,
     CalendarComponent,],
+
   templateUrl: './booking-form.component.html',
   styleUrl: './booking-form.component.scss'
 })
 export class BookingFormComponent implements OnInit {
   form!: FormGroup;
-  WorkspacesTypes = WorkspacesTypes;
   workspaceTypes: WorkspacesByType[] = [];
   unavailableRanges: DateTimeRange[] = [];
 
   mode: 'new' | 'edit' = 'new';
   bookingId?: number;
   coworkingId!: number;
+  //workspaceType?: number;
 
   constructor(
     private fb: FormBuilder,

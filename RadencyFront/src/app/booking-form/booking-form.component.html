@@ -42,6 +42,7 @@
         <!-- Date & Time -->
         <app-calendar *ngIf="form.get('selectedUnit')?.value" [unavailableRanges]="unavailableRanges"
             [workspaceType]="form.get('workspaceType')?.value" [selectedRange]="form.get('dateTimeRange')?.value"
+            [workspaceUnitId]="form.get('selectedUnit')?.value"
             (rangeChange)="form.get('dateTimeRange')?.setValue($event)"
             (validationChange)="form.get('dateTimeRange')?.setErrors($event ? null : { 'invalidRange': true })">
         </app-calendar>
