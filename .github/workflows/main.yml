@@ -73,13 +73,6 @@ jobs:
 # First ensure secrets exist
       - name: Deploy to Azure Container Apps
         run: |
-         az containerapp secret set \
-            --name ${{ env.CONTAINERAPP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --secrets database-connection=secretref:DATABASE_CONNECTION \
-                       azure-static-web-app-url=secretref:AZURE_STATIC_WEB_APP_URL
-          
-          # Update the container app with new image and environment variables
           az containerapp update \
             --name ${{ env.CONTAINERAPP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
@@ -87,6 +80,14 @@ jobs:
             --set-env-vars ASPNETCORE_ENVIRONMENT=Production \
             DATABASE_CONNECTION_STRING=secretref:database-connection \
             AZURE_STATIC_WEB_APPS_URL=secretref:azure-static-web-app-url
+#         az containerapp secret set \
+#            --name ${{ env.CONTAINERAPP_NAME }} \
+#            --resource-group ${{ env.RESOURCE_GROUP }} \
+#            --secrets database-connection=secretref:DATABASE_CONNECTION \
+#                       azure-static-web-app-url=secretref:AZURE_STATIC_WEB_APP_URL          
+#           Update the container app with new image and environment variables
+ 
+#    az containerapp update continuewrong      
 #          DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
 #          ConnectionStrings__DefaultConnection=${{ secrets.DATABASE_CONNECTION_STRING }}
 #          AZURE_STATIC_WEB_APPS_URL=${{ secrets.AZURE_STATIC_WEB_APPS_URL }}
