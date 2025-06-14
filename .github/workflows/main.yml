@@ -79,7 +79,8 @@ jobs:
             --image ${{ env.ACR_LOGIN_SERVER }}/coworking-svc:${{ github.sha }} \
             --set-env-vars ASPNETCORE_ENVIRONMENT=Production \
             DATABASE_CONNECTION_STRING=secretref:database-connection \
-            AZURE_STATIC_WEB_APPS_URL=secretref:azure-static-web-app-url
+            AZURE_STATIC_WEB_APPS_URL=secretref:azure-static-web-app-url \
+            GROQ_API_KEY=secretref:groq-api-key
 #         az containerapp secret set \
 #            --name ${{ env.CONTAINERAPP_NAME }} \
 #            --resource-group ${{ env.RESOURCE_GROUP }} \
