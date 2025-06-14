@@ -1,14 +1,17 @@
 <div class="container" *ngIf="coworking$ | async as coworking">
 
-    <div class="btn-group end">
-        <button mat-flat-button color="primary" [routerLink]="['/coworkings']">
-            Back to Coworkings List
-        </button>
-    </div>
-
     <div class="page-header">
-        <h1>{{ coworking.name }}</h1>
-        <p>{{ coworking.address }}</p>
+        <div class="header-info">
+            <h1>{{ coworking.name }}</h1>
+            <p>{{ coworking.address }}</p>
+        </div>
+        <div class="header-actions">
+            <div class="btn-group end">
+                <button mat-flat-button color="primary" [routerLink]="['/coworking']">
+                    Back to Coworkings List
+                </button>
+            </div>
+        </div>
     </div>
 
     <mat-grid-list cols="1" rowHeight="200px" gutterSize="16px">

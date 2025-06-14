@@ -19,7 +19,10 @@ namespace RadencyBack.Services
             this.bookingService = bookingService;
             this.httpClient = httpClient;
             this.logger = logger;
-            groqApiKey = configuration["Groq:ApiKey"] ?? throw new NotFoundException("Groq API key not configured");
+
+
+            groqApiKey = Environment.GetEnvironmentVariable("GROQ_API_KEY") ?? configuration["Groq:ApiKey"] ??
+                throw new NotFoundException("Groq API key not configured");
 
             this.httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {groqApiKey}");
         }

@@ -13,6 +13,15 @@ mat-grid-list {
     }
 }
 
+.page-header {
+    @extend .page-header;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    
+}
+
 .amenities,
 .workspaces {
     margin-top: var(--spacing-xl);
@@ -30,12 +39,4 @@ mat-grid-list {
     }
 }
 
-.btn-group {
-    @extend .btn-group;
-
-    @media(max-width: 768px) {
-        margin-top: 0;
-    }
-
-    margin-bottom: var(--spacing-md);
-}
+ 

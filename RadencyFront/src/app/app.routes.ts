@@ -7,16 +7,40 @@ import { AiComponent } from './ai/ai.component';
 import { CoworkingListComponent } from './coworking-list/coworking-list.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/coworkings', pathMatch: 'full' },
-  { path: 'coworking/:id', component: CoworkingDetailPageComponent },
-  { path: 'booking/new', component: BookingFormComponent },
-  { path: 'booking/edit/:id', component: BookingFormComponent },
-  { path: 'my-bookings', component: MyBookingsPageComponent },
-  { path: 'not-found', component: NotFoundComponent },
-  { path: 'error/:code', component: NotFoundComponent },
-  { path: 'ai', component: AiComponent },
-  {path:'coworkings',component:CoworkingListComponent},
+  { path: '', redirectTo: '/coworking', pathMatch: 'full' },
 
-
-  { path: 'error', redirectTo: '/error/404' },
-  { path: '**', redirectTo: '/error/404' }];
+  {
+    path: 'coworking',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./Shared/Routes/coworkings.routes').then(m => m.coworkingsRoutes)
+      }
+    ]
+  },
+  {
+    path: 'booking',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./Shared/Routes/booking-form.routes').then(m => m.bookingRoutes)
+      }
+    ]
+  },
+  {
+    path: 'my-bookings',
+    loadComponent: () =>
+      import('./my-bookings-page/my-bookings-page.component').then(m => m.MyBookingsPageComponent)
+  },
+  {
+    path: 'ai',
+    loadComponent: () =>
+      import('./ai/ai.component').then(m => m.AiComponent)
+  },
+  {
+    path: 'error/:code',
+    loadComponent: () =>
+      import('../app/Shared/SharedComponents/error/error.component').then(m => m.NotFoundComponent)
+  },
+  { path: '**', redirectTo: '/error/404' }
+];
