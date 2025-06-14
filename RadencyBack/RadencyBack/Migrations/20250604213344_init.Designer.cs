@@ -26,290 +26,290 @@ namespace RadencyBack.Migrations
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("RadencyBack.Entities.Amenity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Icon")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Icon")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("Amenities");
-                });
+                b.ToTable("Amenities");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.Booking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("EndTimeUTC")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("EndTimeUTC")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("StartTimeUTC")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("StartTimeUTC")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("TimeZoneId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("TimeZoneId")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<int>("UserInfoId")
-                        .HasColumnType("integer");
+                b.Property<int>("UserInfoId")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("WorkspaceUnitId")
-                        .HasColumnType("integer");
+                b.Property<int>("WorkspaceUnitId")
+                    .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserInfoId");
+                b.HasIndex("UserInfoId");
 
-                    b.HasIndex("WorkspaceUnitId");
+                b.HasIndex("WorkspaceUnitId");
 
-                    b.ToTable("Bookings");
-                });
+                b.ToTable("Bookings");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.Coworking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Address")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("Coworkings");
-                });
+                b.ToTable("Coworkings");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.Photo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoworkingId")
-                        .HasColumnType("integer");
+                b.Property<int>("CoworkingId")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Url")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CoworkingId");
+                b.HasIndex("CoworkingId");
 
-                    b.ToTable("Photos");
-                });
+                b.ToTable("Photos");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.UserBookingInfo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Email")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("UserBookingInfos");
-                });
+                b.ToTable("UserBookingInfos");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.WorkspaceAmenity", b =>
-                {
-                    b.Property<int>("CoworkingId")
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("CoworkingId")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("AmenityId")
-                        .HasColumnType("integer");
+                b.Property<int>("AmenityId")
+                    .HasColumnType("integer");
 
-                    b.HasKey("CoworkingId", "AmenityId");
+                b.HasKey("CoworkingId", "AmenityId");
 
-                    b.HasIndex("AmenityId");
+                b.HasIndex("AmenityId");
 
-                    b.ToTable("WorkspaceAmenities");
-                });
+                b.ToTable("WorkspaceAmenities");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.WorkspaceUnit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoworkingId")
-                        .HasColumnType("integer");
+                b.Property<int>("CoworkingId")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("WorkspaceType")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                b.Property<string>("WorkspaceType")
+                    .IsRequired()
+                    .HasMaxLength(13)
+                    .HasColumnType("character varying(13)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CoworkingId");
+                b.HasIndex("CoworkingId");
 
-                    b.ToTable("WorkspaceUnits");
+                b.ToTable("WorkspaceUnits");
 
-                    b.HasDiscriminator<string>("WorkspaceType").HasValue("WorkspaceUnit");
+                b.HasDiscriminator<string>("WorkspaceType").HasValue("WorkspaceUnit");
 
-                    b.UseTphMappingStrategy();
-                });
+                b.UseTphMappingStrategy();
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.MeetingWorkspaceUnit", b =>
+            {
+                b.HasBaseType("RadencyBack.Entities.WorkspaceUnit");
+
+                b.Property<int>("MaxCapacity")
+                    .HasColumnType("integer");
+
+                b.ToTable("WorkspaceUnits", t =>
                 {
-                    b.HasBaseType("RadencyBack.Entities.WorkspaceUnit");
-
-                    b.Property<int>("MaxCapacity")
-                        .HasColumnType("integer");
-
-                    b.ToTable("WorkspaceUnits", t =>
-                        {
-                            t.Property("MaxCapacity")
-                                .HasColumnName("MeetingWorkspaceUnit_MaxCapacity");
-                        });
-
-                    b.HasDiscriminator().HasValue("Meeting");
+                    t.Property("MaxCapacity")
+                        .HasColumnName("MeetingWorkspaceUnit_MaxCapacity");
                 });
+
+                b.HasDiscriminator().HasValue("Meeting");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.OpenWorkspaceUnit", b =>
+            {
+                b.HasBaseType("RadencyBack.Entities.WorkspaceUnit");
+
+                b.Property<int>("MaxCapacity")
+                    .HasColumnType("integer");
+
+                b.ToTable("WorkspaceUnits", t =>
                 {
-                    b.HasBaseType("RadencyBack.Entities.WorkspaceUnit");
-
-                    b.Property<int>("MaxCapacity")
-                        .HasColumnType("integer");
-
-                    b.ToTable("WorkspaceUnits", t =>
-                        {
-                            t.Property("MaxCapacity")
-                                .HasColumnName("OpenWorkspaceUnit_MaxCapacity");
-                        });
-
-                    b.HasDiscriminator().HasValue("Open");
+                    t.Property("MaxCapacity")
+                        .HasColumnName("OpenWorkspaceUnit_MaxCapacity");
                 });
+
+                b.HasDiscriminator().HasValue("Open");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.PrivateWorkspaceUnit", b =>
-                {
-                    b.HasBaseType("RadencyBack.Entities.WorkspaceUnit");
+            {
+                b.HasBaseType("RadencyBack.Entities.WorkspaceUnit");
 
-                    b.Property<int>("MaxCapacity")
-                        .HasColumnType("integer");
+                b.Property<int>("MaxCapacity")
+                    .HasColumnType("integer");
 
-                    b.HasDiscriminator().HasValue("Private");
-                });
+                b.HasDiscriminator().HasValue("Private");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.Booking", b =>
-                {
-                    b.HasOne("RadencyBack.Entities.UserBookingInfo", "UserInfo")
-                        .WithMany("Bookings")
-                        .HasForeignKey("UserInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RadencyBack.Entities.UserBookingInfo", "UserInfo")
+                    .WithMany("Bookings")
+                    .HasForeignKey("UserInfoId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RadencyBack.Entities.WorkspaceUnit", "WorkspaceUnit")
-                        .WithMany("Bookings")
-                        .HasForeignKey("WorkspaceUnitId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("RadencyBack.Entities.WorkspaceUnit", "WorkspaceUnit")
+                    .WithMany("Bookings")
+                    .HasForeignKey("WorkspaceUnitId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.Navigation("UserInfo");
+                b.Navigation("UserInfo");
 
-                    b.Navigation("WorkspaceUnit");
-                });
+                b.Navigation("WorkspaceUnit");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.Photo", b =>
-                {
-                    b.HasOne("RadencyBack.Entities.Coworking", "Coworking")
-                        .WithMany("Photos")
-                        .HasForeignKey("CoworkingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RadencyBack.Entities.Coworking", "Coworking")
+                    .WithMany("Photos")
+                    .HasForeignKey("CoworkingId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Coworking");
-                });
+                b.Navigation("Coworking");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.WorkspaceAmenity", b =>
-                {
-                    b.HasOne("RadencyBack.Entities.Amenity", "Amenity")
-                        .WithMany("WorkspaceAmenities")
-                        .HasForeignKey("AmenityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("RadencyBack.Entities.Amenity", "Amenity")
+                    .WithMany("WorkspaceAmenities")
+                    .HasForeignKey("AmenityId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("RadencyBack.Entities.Coworking", "Coworking")
-                        .WithMany("WorkspaceAmenities")
-                        .HasForeignKey("CoworkingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("RadencyBack.Entities.Coworking", "Coworking")
+                    .WithMany("WorkspaceAmenities")
+                    .HasForeignKey("CoworkingId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.Navigation("Amenity");
+                b.Navigation("Amenity");
 
-                    b.Navigation("Coworking");
-                });
+                b.Navigation("Coworking");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.WorkspaceUnit", b =>
-                {
-                    b.HasOne("RadencyBack.Entities.Coworking", "Coworking")
-                        .WithMany("Workspaces")
-                        .HasForeignKey("CoworkingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RadencyBack.Entities.Coworking", "Coworking")
+                    .WithMany("Workspaces")
+                    .HasForeignKey("CoworkingId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Coworking");
-                });
+                b.Navigation("Coworking");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.Amenity", b =>
-                {
-                    b.Navigation("WorkspaceAmenities");
-                });
+            {
+                b.Navigation("WorkspaceAmenities");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.Coworking", b =>
-                {
-                    b.Navigation("Photos");
+            {
+                b.Navigation("Photos");
 
-                    b.Navigation("WorkspaceAmenities");
+                b.Navigation("WorkspaceAmenities");
 
-                    b.Navigation("Workspaces");
-                });
+                b.Navigation("Workspaces");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.UserBookingInfo", b =>
-                {
-                    b.Navigation("Bookings");
-                });
+            {
+                b.Navigation("Bookings");
+            });
 
             modelBuilder.Entity("RadencyBack.Entities.WorkspaceUnit", b =>
-                {
-                    b.Navigation("Bookings");
-                });
+            {
+                b.Navigation("Bookings");
+            });
 #pragma warning restore 612, 618
         }
     }

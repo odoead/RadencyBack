@@ -1,8 +1,8 @@
-<h2 mat-dialog-title>{{ data.title }}</h2>
+<h2 mat-dialog-title class="title">{{ data.title }}</h2>
 <mat-dialog-content>
     {{ data.message }}
 </mat-dialog-content>
-<mat-dialog-actions class="btn-group">
-    <button mat-raised-button color="primary" (click)="dialogRef.close(false)">No</button>
-    <button mat-raised-button color="primary" (click)="dialogRef.close(true)">Yes</button>
+<mat-dialog-actions class="btn-group center ">
+    <button mat-flat-button class="btn-large" color="primary" (click)="dialogRef.close(true)">Yes</button>
+    <button mat-flat-button class="btn-large" color="primary" (click)="dialogRef.close(false)">No</button>
 </mat-dialog-actions>

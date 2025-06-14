@@ -1,6 +1,12 @@
 <div class="container">
     <h2>{{ mode === "new" ? "Create Booking" : "Edit Booking" }}</h2>
 
+    <div class="btn-group start" style="padding-bottom: var(--spacing-sm);">
+        <button mat-flat-button color="primary" (click)="goToBookings()" class="btn btn-primary">
+            Go to Bookings
+        </button>
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="form-row">
             <mat-form-field class="form-field" appearance="outline">
@@ -57,7 +63,7 @@
 
         <!-- submit -->
         <div class="btn-group end">
-            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
                 {{ mode === "new" ? "Book Now" : "Save" }}
             </button>
         </div>

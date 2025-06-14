@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RadencyBack.DTO.AI;
 using RadencyBack.DTO.booking;
 using RadencyBack.Entities;
 using RadencyBack.Exceptions;
@@ -64,7 +65,7 @@ namespace RadencyBack.Services
         {
             var StartTimeUTC = TimezoneConverter.GetUtcFromLocal(StartTimeLOC, TimeZoneId);
             var EndTimeUTC = TimezoneConverter.GetUtcFromLocal(EndTimeLOC, TimeZoneId);
-            var doesCoworkingAvailable = await coworkingService.CheckAvailabilityUTCAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, null);
+            var doesCoworkingAvailable = await coworkingService.IsAvailableInUtcAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, null);
             if (!doesCoworkingAvailable)
             {
                 throw new BadRequestException("Selected time is not available. Please choose a different slot.");
@@ -105,7 +106,7 @@ namespace RadencyBack.Services
 
             var StartTimeUTC = TimezoneConverter.GetUtcFromLocal(StartTimeLOC, TimeZoneId);
             var EndTimeUTC = TimezoneConverter.GetUtcFromLocal(EndTimeLOC, TimeZoneId);
-            var doesCoworkingAvailable = await coworkingService.CheckAvailabilityUTCAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, id);
+            var doesCoworkingAvailable = await coworkingService.IsAvailableInUtcAsync(WorkspaceUnitId, StartTimeUTC, EndTimeUTC, id);
             if (!doesCoworkingAvailable)
             {
                 throw new BadRequestException("Selected time is not available. Please choose a different slot.");
@@ -150,6 +151,26 @@ namespace RadencyBack.Services
                 MeetingWorkspaceUnit meeting => meeting.MaxCapacity,
                 _ => 0
             };
+        }
+
+        public async Task<List<BookingAIRequestDTO>> GetUserBookingsAiRequestAsync()
+        {
+            var bookings = await dbcontext.Bookings.Include(b => b.WorkspaceUnit).ThenInclude(w => w.Coworking)
+                .ToListAsync();
+
+            return bookings.Select(b => new BookingAIRequestDTO
+            {
+                Id = b.Id,
+                WorkspaceType = GetWorkspaceTypeName(b.WorkspaceUnit),
+                CoworkingName = b.WorkspaceUnit.Coworking.Name,
+                CoworkingAddress = b.WorkspaceUnit.Coworking.Address,
+                StartTime = TimezoneConverter.GetLocalFromUtc(b.StartTimeUTC, b.TimeZoneId),
+                EndTime = TimezoneConverter.GetLocalFromUtc(b.EndTimeUTC, b.TimeZoneId),
+                TimeZone = b.TimeZoneId,
+                MaxCapacity = GetWorkspaceCapacity(b.WorkspaceUnit),
+            }).ToList();
+
+
         }
     }
 }

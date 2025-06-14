@@ -7,6 +7,7 @@ import { HeadersService } from './headers.service';
 import { UnavailableWorkspaceUnitLOCRanges, } from '../Entities/UnavailableWorkspaceUnitLOCRanges';
 import { environment } from '../../../environments/environment.development';
 import { ConfigService } from './config.service';
+import { CoworkingMin } from '../Entities/CoworkingMin';
 
 @Injectable({
   providedIn: 'root'
@@ -23,13 +24,19 @@ export class CoworkingService {
   } constructor(private http: HttpClient, private configService: ConfigService) {
   }
 
+  getAllCoworkingsDetails(isPageLoad: boolean): Observable<CoworkingMin[]> {
+    isPageLoad ? HeadersService.setPageLoad() : undefined;
+    return this.http.get<CoworkingMin[]>(this.getApiUrl())
+      .pipe(catchError(this.handleError));
+  }
+
   getCoworkingDetailsById(id: number, isPageLoad: boolean): Observable<CoworkingDetails> {
     isPageLoad ? HeadersService.setPageLoad() : undefined;
     return this.http.get<CoworkingDetails>(`${this.getApiUrl()}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
-  checkAvailability(data: AvailabilityCheck): Observable<boolean> {
+  isLOCTimeRangeAvaliable(data: AvailabilityCheck): Observable<boolean> {
     return this.http.post<boolean>(`${this.getApiUrl()}/check-availability`, data)
       .pipe(catchError(this.handleError));
   }

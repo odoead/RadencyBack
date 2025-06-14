@@ -1,30 +1,63 @@
-.calendar-card {}
+.calendar-card {
+    .mat-card-header {
+        padding-bottom: var(--spacing-md);
+    }
+
+    .mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-size: var(--font-size-lg);
+    }
+
+    .mat-card-subtitle {
+        font-size: var(--font-size-sm);
+    }
+}
 
 .info-section {
-    margin-top: var(--spacing-md);
-    font-size: 0.9rem;
+    margin-top: var(--spacing-lg);
+    font-size: var(--font-size-sm);
     color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
 
     mat-icon {
 
         margin-right: var(--spacing-xs);
     }
+}
 
-    .duration-info,
-    .timezone-info {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-xs);
-        margin-bottom: var(--spacing-sm);
+.duration-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+
+        mat-icon {
+            display: none;
+        }
     }
 }
+
+.timezone-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
 
 .validation-error {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
     color: var(--warn-color);
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
 
     mat-icon {
         font-size: 18px;

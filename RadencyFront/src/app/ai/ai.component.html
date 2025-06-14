@@ -1,0 +1,45 @@
+<mat-card class="chat-card">
+    <div class="chat-header">
+        <mat-icon>chat</mat-icon>
+        <h2>AI Chat</h2>
+    </div>
+
+    <mat-card-content class="chat-content">
+
+        <div class="chat-messages" #scrollContainer>
+            <div *ngFor="let message of requestResponseMessages"
+                [ngClass]="{'msg-user': message.sender === 'user', 'msg-ai': message.sender === 'ai'}"
+                class="chat-message">
+                <div class="message-bubble"
+                    [ngClass]="{'bubble-user': message.sender === 'user', 'bubble-ai': message.sender === 'ai'}">
+                    <span *ngIf="message.sender === 'ai'" [innerHTML]="formatAiText(message.text)"></span>
+                    <span *ngIf="message.sender !== 'ai'">{{ message.text }}</span>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="suggestions" *ngIf="suggestedQuestions.length > 0">
+            <span>Suggestions:</span>
+            <mat-chip-set>
+                <mat-chip *ngFor="let q of suggestedQuestions" selectable="false" (click)="onSuggestionClick(q)"
+                    class="suggestion-chip">
+                    {{ q }}
+                </mat-chip>
+            </mat-chip-set>
+        </div>
+    </mat-card-content>
+
+    <div class="input-area">
+        <mat-form-field class="input-field" appearance="outline">
+            <input matInput placeholder="Type your question..." [formControl]="inputControl" (keyup.enter)="onSend()"
+                [disabled]="isLoading">
+        </mat-form-field>
+        <div class="btn-group">
+            <button mat-flat-button color="primary" (click)="onSend()" [disabled]="isLoading || !inputControl.value">
+                Send
+            </button>
+        </div>
+    </div>
+</mat-card>

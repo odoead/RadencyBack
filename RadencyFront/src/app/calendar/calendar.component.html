@@ -89,13 +89,9 @@
             <div class="quick-duration-buttons" *ngIf="workspaceType && getQuickDurations().length">
                 <h4>Quick Durations:</h4>
                 <div class="button-group">
-                    <button mat-stroked-button *ngFor="let duration of getQuickDurations()"
-                        (click)="setQuickDuration(duration)" [disabled]="
-              !startDateControl.value ||
-              !startTimeControl.value ||
-              !startDateControl.valid ||
-              !startTimeControl.valid
-            ">
+                    <button mat-flat-button color="primary" *ngFor="let duration of getQuickDurations()"
+                        (click)="setQuickDuration(duration)" [disabled]="!startDateControl.value ||!startTimeControl.value 
+                        ||!startDateControl.valid ||!startTimeControl.valid">
                         {{ duration.label }}
                     </button>
                 </div>

@@ -1,16 +1,14 @@
  h2 {
-     margin-bottom: var(--spacing-md);
-     color: var(--text-primary);
+     font-size: var(--font-size-xl);
+     margin-bottom: var(--spacing-lg);
  }
 
- .btn-group.end {
-     @extend .btn-group;
-     justify-content: flex-end;
-     gap: var(--spacing-sm);
+ .error-message {
+     margin-top: var(--spacing-md);
+ }
 
-     @media (max-width: 768px) {
-         flex-direction: column;
-         align-items: stretch;
-         justify-content: flex-start;
-     }
+ .btn-group {
+     @extend .btn-group;
+
+     @media (max-width: 768px) {}
  }

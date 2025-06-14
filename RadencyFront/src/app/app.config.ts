@@ -7,6 +7,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MatNativeDateModule } from '@angular/material/core';
 import { errorHandlingInterceptor } from './Shared/Interceptors/error-handling.interceptor';
 import { ConfigService } from './Shared/Services/config.service';
+import { provideState, provideStore, StoreModule } from '@ngrx/store';
+import { bookingsReducer, bookingsFeatureKey } from './Shared/NGRX/bookings/bookingsReducer';
+import { BookingsEffects } from './Shared/NGRX/bookings/bookingsEffect';
+import { provideEffects } from '@ngrx/effects';
 
 export function initializeConfig(configService: ConfigService) {
   return (): Promise<void> => {
@@ -16,6 +20,12 @@ export function initializeConfig(configService: ConfigService) {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideStore(),
+     provideState(bookingsFeatureKey, bookingsReducer),
+      provideEffects(BookingsEffects),
+
+    
+
     provideRouter(routes),
     provideHttpClient(
       withInterceptors([errorHandlingInterceptor])

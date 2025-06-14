@@ -1,0 +1,70 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Coworking Spaces</h1>
+        <p>Browse and select a coworking space to view details and book a workspace.</p>
+    </div>
+
+    <div *ngIf="coworkings.length === 0" class="empty-state">
+        <mat-icon>domain_disabled</mat-icon>
+        <div>No coworking spaces found.</div>
+    </div>
+
+    <div *ngIf="coworkings.length > 0">
+        <div class="coworking-list">
+            <mat-card class="coworking-card" *ngFor="let c of coworkings" (click)="goToCoworking(c.id)" tabindex="0"
+                role="button">
+                <!--image first -->
+                <div class="card-image">
+                    <img mat-card-image [src]="c.photoUrl" [alt]="c.name" />
+                </div>
+                <!--data second -->
+                <div class="card-info">
+                    <mat-card-header>
+                        <mat-card-title class="card-title">{{ c.name }}</mat-card-title>
+                        <mat-card-subtitle class="card-subtitle">{{ c.address }}</mat-card-subtitle>
+                    </mat-card-header>
+
+                    <mat-card-content class="card-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Total Capacity:</span>
+                            <span class="detail-value">{{ c.totalCoworkingCapacity }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Units:</span>
+                            <span class="detail-value">{{ c.totalWorkspaceUnitCount }}</span>
+                        </div>
+                        <div class="unit-counts">
+                            <div class="unit-item" title="Open Space">
+                                <mat-icon aria-label="Open Space">desktop_mac</mat-icon>
+                                <span class="unit-label">Open Space: </span>
+                                <span>{{ c.openWorkspaceUnitCount }}</span>
+                            </div>
+                            <div class="unit-item" title="Private Room">
+                                <mat-icon aria-label="Private Room">meeting_room</mat-icon>
+                                <span class="unit-label">Private Room: </span>
+                                <span>{{ c.privateWorkspaceUnitCount }}</span>
+                            </div>
+                            <div class="unit-item" title="Meeting Room">
+                                <mat-icon aria-label="Meeting Room">groups</mat-icon>
+                                <span class="unit-label">Meeting Room: </span>
+                                <span>{{ c.meetingWorkspaceUnitCount }}</span>
+                            </div>
+                        </div>
+                    </mat-card-content>
+
+                    <mat-card-actions class="card-actions">
+                        <div class="btn-group">
+                            <button mat-raised-button color="primary" class="btn-large"
+                                (click)="$event.stopPropagation(); goToCoworking(c.id)">
+                                View Details
+                            </button>
+                        </div>
+
+                    </mat-card-actions>
+                </div>
+
+
+            </mat-card>
+        </div>
+    </div>
+</div>

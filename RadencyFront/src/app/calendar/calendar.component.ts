@@ -55,7 +55,7 @@ export class CalendarComponent implements OnInit, OnChanges {
 
   public isChecking = false;
   public hasOverlap = false;
-  // form controls
+
   startDateControl = new FormControl<Date | null>(null, Validators.required);
   startTimeControl = new FormControl<string | null>(null, [
     Validators.required,
@@ -120,6 +120,7 @@ export class CalendarComponent implements OnInit, OnChanges {
           !!range;
         const exceedsDuration = range ? this.isDurationExceeded(range) : false;
         const overallValid = allValidLocally && !overlap && !exceedsDuration;
+        console.log('Calendar emits range:', range, 'valid?', !overlap && !!range && !this.isDurationExceeded(range));
 
         this.validationChange.emit(overallValid);
         this.rangeChange.emit(overallValid ? range : null);
@@ -254,6 +255,7 @@ export class CalendarComponent implements OnInit, OnChanges {
       case WorkspacesTypes.MeetingRoom:
         return 1;
       case WorkspacesTypes.OpenSpace:
+        return 30;
       case WorkspacesTypes.PrivateRoom:
         return 30;
       default:
