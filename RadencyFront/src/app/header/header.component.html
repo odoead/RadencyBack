@@ -4,12 +4,18 @@
             <mat-icon class="logo-icon">business</mat-icon>
             <span class="logo-text">CoworkSpace</span>
         </div>
+        <div class="booking-count">
+            Total bookings: {{ bookingsCount$ | async }}
+        </div>
     </div>
 
     <nav class="nav-links">
+        <a mat-button routerLink="/coworkings" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: false}"
+            (click)="closeMobileMenu()">
+            Coworkings
+        </a>
         <a mat-button routerLink="/coworking/2" routerLinkActive="active-link"
             [routerLinkActiveOptions]="{exact: false}" (click)="closeMobileMenu()">
-
             Coworking 2
         </a>
         <a mat-button routerLink="/coworking/1" routerLinkActive="active-link"
@@ -31,9 +37,12 @@
 
 
     <div class="mobile-menu" [class.open]="isMobileMenuOpen">
+        <a mat-button routerLink="/coworkings" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: false}"
+            (click)="closeMobileMenu()">
+            Coworkings
+        </a>
         <a mat-button routerLink="/coworking/2" routerLinkActive="active-link"
             [routerLinkActiveOptions]="{exact: false}" (click)="closeMobileMenu()">
-
             Coworking 2
         </a>
 

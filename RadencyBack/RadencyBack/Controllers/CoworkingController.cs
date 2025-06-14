@@ -23,6 +23,19 @@ namespace RadencyBack.Controllers
             this.coworkingService = coworkingService;
         }
 
+
+        [HttpGet()]
+        [ProducesResponseType(typeof(GetCoworkingDetailsDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<GetCoworkingDetailsDTO>> GetAllCoworkingsDetails()
+        {
+            var coworkings = await coworkingService.GetAllCoworkingsDetailsAsync();
+            if (coworkings == null)
+                return NotFound();
+
+            return Ok(coworkings);
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GetCoworkingDetailsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
@@ -37,9 +50,9 @@ namespace RadencyBack.Controllers
 
         [HttpPost("check-availability")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        public async Task<ActionResult<bool>> CheckAvailability([FromBody] AvailabilityCheckDTO availabilityCheck)
+        public async Task<ActionResult<bool>> IsLOCTimeRangeAvaliable([FromBody] AvailabilityCheckDTO availabilityCheck)
         {
-            var isAvailable = await coworkingService.CheckAvailabilityLOCAsync(availabilityCheck.WorkspaceUnitId, availabilityCheck.StartTimeLOC, availabilityCheck.EndTimeLOC, availabilityCheck.ExcludeBookingId);
+            var isAvailable = await coworkingService.IsAvailableInLOCAsync(availabilityCheck.WorkspaceUnitId, availabilityCheck.StartTimeLOC, availabilityCheck.EndTimeLOC, availabilityCheck.ExcludeBookingId);
             return Ok(isAvailable);
         }
 

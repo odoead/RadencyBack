@@ -64,8 +64,12 @@ builder.Services.AddScoped<IValidator<MeetingWorkspaceUnit>, MeetingWorkspaceUni
 
 
 
+
 builder.Services.AddScoped<ICoworkingService, CoworkingService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IAIAssistantService, AiAssistantService>();
+builder.Services.AddHttpClient<AiAssistantService>();
+
 
 // CORS
 builder.Services.AddCors(options =>
@@ -100,6 +104,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+    | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+});
+
 app.ConfigureExceptionHandler();
 app.UseCors();
 app.UseHttpsRedirection();
@@ -110,7 +120,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<Context>();
-    await dbContext.Database.MigrateAsync();
+    //await dbContext.Database.MigrateAsync();
 
     await Seeder.SeedDataAsync(dbContext);
 }

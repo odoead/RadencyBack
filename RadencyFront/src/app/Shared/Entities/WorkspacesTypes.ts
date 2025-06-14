@@ -1,6 +1,6 @@
 export enum WorkspacesTypes {
-   OpenSpace = 'OpenSpace', 
-    MeetingRoom = 'MeetingRoom',
-    PrivateRoom = 'PrivateRoom',
+   OpenSpace = 'OpenWorkspace', 
+    MeetingRoom = 'MeetingWorkspace',
+    PrivateRoom = 'PrivateWorkspace',
 
 }

@@ -9,23 +9,24 @@
 }
 
 .amenities-grid {
-    mat-chip-set {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--spacing-sm);
-    }
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+
+
 }
 
+
 .amenity-chip {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
 
     mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
     }
 }
 

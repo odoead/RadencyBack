@@ -5,18 +5,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { AmenitiesListComponent } from "../amenities-list/amenities-list.component";
+import { Amenity } from '../Shared/Entities/Amenity';
 
 @Component({
   selector: 'app-workspace-card',
   standalone: true,
-  imports: [MatCardModule, CommonModule, MatButtonModule, MatIconModule],
+  imports: [MatCardModule, CommonModule, MatButtonModule, MatIconModule, AmenitiesListComponent],
   templateUrl: './workspace-card.component.html',
   styleUrl: './workspace-card.component.scss'
 })
 export class WorkspaceCardComponent {
   @Input() workspace!: WorkspacesByType;
   @Output() bookNow = new EventEmitter<WorkspacesByType>();
-
+  @Input() amenities!: Amenity[];
 
   workspaceTypes = WorkspacesTypes;
 
@@ -39,13 +41,13 @@ export class WorkspaceCardComponent {
   getWorkspaceTitleByType(type: string): string {
 
 
-    if (type === WorkspacesTypes.OpenSpace) {
+    if (type.toLocaleLowerCase() === WorkspacesTypes.OpenSpace.toLocaleLowerCase()) {
       return 'Open Space';
     }
-    else if (type === WorkspacesTypes.PrivateRoom) {
+    else if (type.toLocaleLowerCase() === WorkspacesTypes.PrivateRoom.toLocaleLowerCase()) {
       return 'Private Room';
     }
-    else if (type === WorkspacesTypes.MeetingRoom) {
+    else if (type.toLocaleLowerCase() === WorkspacesTypes.MeetingRoom.toLocaleLowerCase()) {
       return 'Meeting Room';
     }
     else {
@@ -58,9 +60,6 @@ export class WorkspaceCardComponent {
     return this.workspace.units.filter(unit => unit.isAvailable).length;
   }
 
-  getCurrentBookingCount(): number {
-    return this.workspace.units.filter(unit => unit.hasCurrentBooking).length;
-  }
 
   getCapacityOptions(): string {
     const capacities = [...new Set(this.workspace.units.map(unit => unit.capacity))].sort((a, b) => a - b);
