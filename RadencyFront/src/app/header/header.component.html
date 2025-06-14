@@ -10,21 +10,22 @@
     </div>
 
     <nav class="nav-links">
-        <a mat-button routerLink="/coworkings" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: false}"
+        <a mat-button routerLink="/coworking" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
             (click)="closeMobileMenu()">
             Coworkings
         </a>
-        <a mat-button routerLink="/coworking/2" routerLinkActive="active-link"
-            [routerLinkActiveOptions]="{exact: false}" (click)="closeMobileMenu()">
+        <a mat-button routerLink="/coworking/2" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
+            (click)="closeMobileMenu()">
             Coworking 2
         </a>
-        <a mat-button routerLink="/coworking/1" routerLinkActive="active-link"
-            [routerLinkActiveOptions]="{ exact: false }">
+        <a mat-button routerLink="/coworking/1" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
+            (click)="closeMobileMenu()">
             <mat-icon>location_city</mat-icon>
             Browse Spaces
         </a>
 
-        <a mat-button routerLink="/my-bookings" routerLinkActive="active-link">
+        <a mat-button routerLink="/my-bookings" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
+            (click)="closeMobileMenu()">
             <mat-icon>event</mat-icon>
             My Bookings
         </a>
@@ -37,22 +38,23 @@
 
 
     <div class="mobile-menu" [class.open]="isMobileMenuOpen">
-        <a mat-button routerLink="/coworkings" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: false}"
+        <a mat-button routerLink="/coworking" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
             (click)="closeMobileMenu()">
             Coworkings
         </a>
-        <a mat-button routerLink="/coworking/2" routerLinkActive="active-link"
-            [routerLinkActiveOptions]="{exact: false}" (click)="closeMobileMenu()">
+        <a mat-button routerLink="/coworking/2" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
+            (click)="closeMobileMenu()">
             Coworking 2
         </a>
 
-        <a mat-button routerLink="/coworking/1" routerLinkActive="active-link"
-            [routerLinkActiveOptions]="{exact: false}" (click)="closeMobileMenu()">
+        <a mat-button routerLink="/coworking/1" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
+            (click)="closeMobileMenu()">
             <mat-icon>location_city</mat-icon>
             Browse Spaces
         </a>
 
-        <a mat-button routerLink="/my-bookings" routerLinkActive="active-link" (click)="closeMobileMenu()">
+        <a mat-button routerLink="/my-bookings" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
+            (click)="closeMobileMenu()">
             <mat-icon>event</mat-icon>
             My Bookings
         </a>

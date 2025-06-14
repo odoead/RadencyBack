@@ -74,8 +74,13 @@ body {
 }
 
 .page-header {
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
 
+     .header-info {
+         margin-top: var(--spacing-md);
+     }
+
+     .header-actions {}
     h1 {
         font-size: var(--font-size-xxl);
         color: var(--text-primary);
