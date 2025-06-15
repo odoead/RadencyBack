@@ -9,6 +9,8 @@
 - **Docker+dockercompose** support
 - **Angular+Angular Material**
 - **Scss**
+- **Ngrx**
+- **Storybook**
 
 ### Running Locally
 - To deploy backend use docker: docker-compose up --build
@@ -20,4 +22,4 @@
 ### Running Azure
 - DB route- coworking.postgres.database.azure.com
 - Azure container app - app-coworking-api.wonderfulocean-182f9991.eastus.azurecontainerapps.io
-- Azure static web app - kind-cliff-01f04470f.6.azurestaticapps.net (works with localy deployed api)
+- Azure static web app - kind-cliff-01f04470f.6.azurestaticapps.net
